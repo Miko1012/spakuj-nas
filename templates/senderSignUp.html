@@ -11,7 +11,7 @@
         <a href="/sender/sign-up">Rejestracja nadawcy</a>
     </nav>
     Sender signs up here!!!!!
-    <form action="{{ url_for('sender_register') }}" method="post">
+    <form action="{{ url_for('sender_register') }}" method="post" enctype="multipart/form-data">
         <ul>
             <li>
                 <label for="firstname">Imię:</label>
@@ -22,8 +22,8 @@
                 <input type="text" id="lastname" name="lastname">
             </li>
             <li>
-                <label for="gender">Płeć:</label>
-                <select id="gender">
+                <label for="sex">Płeć:</label>
+                <select id="sex" name="sex">
                     <option value="M">mężczyzna</option>
                     <option value="F">kobieta</option>
                 </select>
