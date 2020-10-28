@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <script src="/static/js/senderSignUp.js"></script>
+    <title>Rejestracja nadawcy paczek</title>
+</head>
+<body>
+    <nav>
+        <a href="/">Strona główna</a>
+        <a href="/sender/sign-up">Rejestracja nadawcy</a>
+    </nav>
+    Sender signs up here!!!!!
+    <form action="{{ url_for('sender_register') }}" method="post">
+        <ul>
+            <li>
+                <label for="firstname">Imię:</label>
+                <input type="text" id="firstname" name="firstname">
+            </li>
+            <li>
+                <label for="lastname">Nazwisko:</label>
+                <input type="text" id="lastname" name="lastname">
+            </li>
+            <li>
+                <label for="gender">Płeć:</label>
+                <select id="gender">
+                    <option value="M">mężczyzna</option>
+                    <option value="F">kobieta</option>
+                </select>
+            </li>
+            <li>
+                <label for="login">Login:</label>
+                <input type="text" id="login" name="login">
+            </li>
+            <li>
+                <label for="password">Hasło:</label>
+                <input type="password" id="password" name="password">
+            </li>
+            <li>
+                <label for="passwordRepeated">Powtórz hasło:</label>
+                <input type="password" id="passwordRepeated" name="passwordRepeated">
+            </li>
+            <li>
+                <label for="photo">Zdjęcie:</label>
+                <input type="file" id="photo" name="photo">
+            </li>
+        </ul>
+        <input type="submit" value="Zarejestruj mnie!">
+    </form>
+    {% if message %}
+        <h1>{{ message }}</h1>
+    {% endif %}
+    <footer>
+        <p>2020</p>
+        <p>Twórca strony: Mikołaj Czarkowski</p>
+        <p>
+            <a href="https://github.com/Miko1012/spakuj-nas">Repozytorium projektu</a>
+        </p>
+    </footer>
+</body>
+</html>
