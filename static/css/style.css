@@ -1,0 +1,6 @@
+.valid-field {
+    background-color: green;
+}
+.invalid-field {
+    background-color: red;
+}
