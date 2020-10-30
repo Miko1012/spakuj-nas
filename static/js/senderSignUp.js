@@ -1,5 +1,33 @@
-validateForm = () => {
-
+validateForm = (firstname, lastname, sex, login, password, passwordRepeated, photo) => {
+    if(!isValid('firstname', firstname)) {
+        alert("Niepoprawne imię!");
+        return false;
+    }
+    if(!isValid('lastname', lastname)) {
+        alert("Niepoprawne nazwisko!");
+        return false;
+    }
+    if(!isValid('sex', sex)) {
+        alert("Niepoprawna płeć!");
+        return false;
+    }
+    if(!isValid('login', login)) {
+        alert("nieprawidłowy login!");
+        return false;
+    }
+    if(!isValid('password', password)) {
+        alert("Niepoprawne hasło!");
+        return false;
+    }
+    if(password !== passwordRepeated) {
+        alert("Podane hasła nie są zgodne!");
+        return false;
+    }
+    if(photo === '') {
+        alert("Niepoprawne lub niezałączone zdjęcie!");
+        return false;
+    }
+    return true;
 }
 
 isValid = (field, value) => {
@@ -12,17 +40,27 @@ isValid = (field, value) => {
             const nameRegexp = new RegExp('^[' + LETTERS + '][' + letters + ']+');
             return nameRegexp.exec(value) !== null;
         case 'sex':
-            console.log(value === 'M' || value === 'F');
             return value === 'M' || value === 'F';
         case 'login':
         case 'password':
             const passwordRegexp = new RegExp('.{8,}');
-            console.log(passwordRegexp.exec(value) !== null);
             return passwordRegexp.exec(value) !== null;
-        case 'passwordRepeated':
-
         case 'photo':
 
+    }
+}
+
+registerSender = (e) => {
+    if(!validateForm(
+        e.target["firstname"].value,
+        e.target["lastname"].value,
+        e.target["sex"].value,
+        e.target["login"].value,
+        e.target["password"].value,
+        e.target["passwordRepeated"].value,
+        e.target["photo"].value,
+        )) {
+        e.preventDefault();
     }
 }
 
@@ -35,7 +73,7 @@ window.onload = () => {
     let password = document.getElementById('password');
     let passwordRepeated = document.getElementById('passwordRepeated');
     let photo = document.getElementById('photo');
-
+    let form = document.getElementById('form');
 
     firstname.addEventListener('input', (e) => {
         if(isValid('firstname', e.target.value)) {
@@ -88,11 +126,17 @@ window.onload = () => {
     });
 
     passwordRepeated.addEventListener('input', (e) => {
-        isValid('passwordRepeated', e.target.value);
+        if(isValid('password', password.value) && passwordRepeated.value === password.value) {
+            passwordRepeated.classList.remove("invalid-field");
+            passwordRepeated.classList.add("valid-field");
+        } else {
+            passwordRepeated.classList.remove("valid-field");
+            passwordRepeated.classList.add("invalid-field");
+        }
     });
 
-    photo.addEventListener('change', (e) => {
-        isValid('firstname', e.target.value);
+    form.addEventListener('submit', (e) => {
+        registerSender(e);
     });
 
 }
