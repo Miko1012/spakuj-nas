@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <script src="/static/js/senderSignUp.js"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styleSenderSignup.css') }}">
     <title>Rejestracja nadawcy paczek</title>
 </head>
 <body>
@@ -11,8 +12,16 @@
         <a href="/">Strona główna</a>
         <a href="/sender/sign-up">Rejestracja nadawcy</a>
     </nav>
-    Sender signs up here!!!!!
-    <form action="https://infinite-hamlet-29399.herokuapp.com/sender/register" method="post" enctype="multipart/form-data" id="form" target="_blank">
+    <div class="content">
+        <div class="header">
+            <div class="title">
+                Rejestracja nadawcy
+            </div>
+            <div class="description">
+            Po wypełnieniu krótkiego formularza będziesz gotowy wstąpić w nasze dostawcze szeregi!
+        </div>
+        </div>
+        <form action="https://infinite-hamlet-29399.herokuapp.com/sender/register" method="post" enctype="multipart/form-data" id="form" target="_blank">
         <ul>
             <li>
                 <label for="firstname">Imię:</label>
@@ -25,6 +34,7 @@
             <li>
                 <label for="sex">Płeć:</label>
                 <select id="sex" name="sex">
+                    <option>Wybierz płeć</option>
                     <option value="M">mężczyzna</option>
                     <option value="F">kobieta</option>
                 </select>
@@ -46,17 +56,19 @@
                 <input type="file" id="photo" name="photo" accept="image/">
             </li>
         </ul>
-        <input type="submit" value="Zarejestruj mnie!">
+        <input type="submit" value="Zarejestruj mnie!" class="register-button" id="form-submit-button">
     </form>
-    {% if message %}
-        <h1>{{ message }}</h1>
-    {% endif %}
+    </div>
     <footer>
-        <p>2020</p>
-        <p>Twórca strony: Mikołaj Czarkowski</p>
-        <p>
-            <a href="https://github.com/Miko1012/spakuj-nas">Repozytorium projektu</a>
-        </p>
+        <a href="mailto:mczarkowski7@outlook.com">
+            2020 Mikołaj Czarkowski
+        </a>
+        <a href="https://github.com/Miko1012/spakuj-nas" target="_blank">
+            Repozytorium projektu
+        </a>
+        <a href="https://www.youtube.com/watch?v=PCQs3vSJ6xA" target="_blank">
+            Grafiki: Tomasz Domański, Mikołaj Olizar-Zakrzewski, Łukasz Partyka
+        </a>
     </footer>
 </body>
 </html>
