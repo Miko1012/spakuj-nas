@@ -1,3 +1,5 @@
+let availableLogin = false;
+
 validateForm = (firstname, lastname, sex, login, password, passwordRepeated, photo) => {
     if(!isValid('firstname', firstname)) {
         alert("Niepoprawne imię!");
@@ -27,6 +29,10 @@ validateForm = (firstname, lastname, sex, login, password, passwordRepeated, pho
         alert("Niepoprawne lub niezałączone zdjęcie!");
         return false;
     }
+    if(!availableLogin) {
+        alert("Ten login jest już zajęty!");
+        return false;
+    }
     return true;
 }
 
@@ -46,11 +52,12 @@ isValid = (field, value) => {
             const passwordRegexp = new RegExp('.{8,}');
             return passwordRegexp.exec(value) !== null;
         case 'photo':
-
+            return value !== '';
     }
 }
 
 registerSender = (e) => {
+
     if(!validateForm(
         e.target["firstname"].value,
         e.target["lastname"].value,
@@ -59,9 +66,15 @@ registerSender = (e) => {
         e.target["password"].value,
         e.target["passwordRepeated"].value,
         e.target["photo"].value,
-        )) {
+        ) || !availableLogin) {
         e.preventDefault();
     }
+}
+
+isLoginAvailable = async (login) => {
+    const response = await fetch('/check/sender/check-login-availability/' + login).then((r) => r.json());
+    availableLogin = response[login] === "available";
+    return response[login] === "available";
 }
 
 window.onload = () => {
@@ -74,6 +87,7 @@ window.onload = () => {
     let passwordRepeated = document.getElementById('passwordRepeated');
     let photo = document.getElementById('photo');
     let form = document.getElementById('form');
+    let loginAvailability = document.getElementById('login-availability');
 
     firstname.addEventListener('input', (e) => {
         if(isValid('firstname', e.target.value)) {
@@ -109,6 +123,18 @@ window.onload = () => {
         if(isValid('login', e.target.value)) {
             login.classList.remove("invalid-field");
             login.classList.add("valid-field");
+            isLoginAvailable(e.target.value).then((available) => {
+                if(available === true) {
+                    loginAvailability.classList.add("hidden");
+                    login.classList.remove("invalid-field");
+                    login.classList.add("valid-field");
+                } else {
+                    loginAvailability.classList.remove("hidden");
+                    login.classList.remove("valid-field");
+                    login.classList.add("invalid-field");
+                }
+
+            });
         } else {
             login.classList.remove("valid-field");
             login.classList.add("invalid-field");
