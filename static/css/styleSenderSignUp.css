@@ -1,0 +1,70 @@
+ul {
+    list-style-type: none;
+}
+label {
+    display: inline-block;
+    width: 150px;
+    font-size: 1.2rem;
+    color: #3B1F2B;
+}
+input {
+    width: 200px;
+}
+select {
+    width: 204px;
+    background-color: #EFF9F0;
+    border-style: none;
+    height: 20px;
+}
+.content {
+    background-image: url('/static/img/backdrop-senderSignUp.png');
+    background-size: cover;
+}
+.header {
+    padding: 2rem 2rem 0.5rem 2rem;
+    color: #3B1F2B;
+}
+.title {
+    font-size: 5rem;
+    font-weight: bold;
+}
+.description {
+    padding: 1rem 0;
+    font-size: 1.5rem;
+    width: 60%;
+}
+input[type="text"] {
+    background-color: #EFF9F0;
+    border-style: none;
+    height: 20px;
+    color: #3B1F2B;
+}
+input[type="password"] {
+    background-color: #EFF9F0;
+    border-style: none;
+    height: 20px;
+    color: #3B1F2B;
+}
+.register-button {
+    background-color: #3B1F2B;
+    color: #EFF9F0;
+    border: none;
+    padding: 0;
+    margin-left: 38px;
+    height: 40px;
+    width: 200px;
+    font-size: 1.3rem;
+}
+#form-submit-button:hover {
+    cursor: pointer;
+    font-weight: bold;
+}
+.valid-field {
+    background-color: #caffbf!important;
+}
+.invalid-field {
+    background-color: #ffadad!important;
+}
+.hidden {
+    display: none;
+}
