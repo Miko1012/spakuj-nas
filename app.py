@@ -1,7 +1,7 @@
 import json
 import requests
 from bcrypt import checkpw, gensalt, hashpw
-from flask import Flask, render_template, request, make_response, session, flash, url_for
+from flask import Flask, render_template, request, make_response, session, flash, url_for, jsonify
 from flask_session import Session
 from dotenv import load_dotenv
 from redis import StrictRedis
@@ -21,7 +21,7 @@ app.secret_key = getenv("SECRET_KEY")
 ses = Session(app)
 
 
-def is_user(login):
+def login_taken(login):
     return db.hexists(f"user:{login}", "password")
 
 
@@ -97,49 +97,45 @@ def sender_register():
     lastname = request.form.get("lastname")
     email = request.form.get("email")
     password = request.form.get("password")
-    passwordrepeated = request.form.get("psswordRepeated")
+    password_repeated = request.form.get("passwordRepeated")
     login = request.form.get("login")
     address = request.form.get("address")
-    # print("firstname: " + firstname + " lastname: " + lastname + " password: " + password)
 
     if not firstname:
         flash("No firstname provided")
+        return render_template('senderSignUp.html')
 
     if not lastname:
         flash("No lastname provided")
+        return render_template('senderSignUp.html')
 
     if not email:
         flash("No email provided")
+        return render_template('senderSignUp.html')
 
     if not password:
         flash("No password provided")
+        return render_template('senderSignUp.html')
 
-    if password != passwordrepeated:
+    if password != password_repeated:
         flash("Passwords do not match")
+        return render_template('senderSignUp.html')
+
+    if login_taken(login):
+        flash("Login already taken")
+        return render_template('senderSignUp.html')
 
     print(f"Registering {login}...")
-    #TODO zobaczyć czy user istnieje w bazie danych
-
     save_user(firstname, lastname, email, password, login, address)
 
     response = make_response("", 301)
     response.headers["Location"] = "/sender/login"
     return response
-    # return render_template('senderSignUp.html')
 
 
-@app.route('/check/sender/check-login-availability/<username>')
-def sender_check_login_availability(username):
-    r = requests.get('https://infinite-hamlet-29399.herokuapp.com/check/' + username).content
-    a = json.loads(r)
-    return a
-    # print(a)
-    # if a[username] is "available":
-    #     print("available")
-    # else:
-    #     print("taken")
-    #
-    # return "ok"
+@app.route('/sender/check-login-availability/<login>')
+def is_user(login):
+    return jsonify(available=(not db.hexists(f"user:{login}", "password")))
 
 
 @app.route('/sender/logout')

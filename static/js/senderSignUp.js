@@ -45,15 +45,30 @@ isValid = (field, value) => {
         case 'lastname':
             const nameRegexp = new RegExp('^[' + LETTERS + '][' + letters + ']+');
             return nameRegexp.exec(value) !== null;
-        case 'sex':
-            return value === 'M' || value === 'F';
         case 'login':
         case 'password':
             const passwordRegexp = new RegExp('.{8,}');
             return passwordRegexp.exec(value) !== null;
-        case 'photo':
-            return value !== '';
+        case 'passwordRepeated':
+            return value === password.value;
+        case 'address':
+            return value !== null
+        case 'email':
+            const emailRegexp = new RegExp('^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$');
+            return emailRegexp.exec(value) !== null;
     }
+}
+
+handleInput = (field, value, element) => {
+    if(isValid(field, value)) {
+            // console.log("valid field")
+            element.classList.remove("invalid-field");
+            element.classList.add("valid-field");
+        } else {
+        // console.log("invalid field")
+            element.classList.remove("valid-field");
+            element.classList.add("invalid-field");
+        }
 }
 
 registerSender = (e) => {
@@ -71,94 +86,59 @@ registerSender = (e) => {
     }
 }
 
-isLoginAvailable = async (login) => {
-    const response = await fetch('/check/sender/check-login-availability/' + login).then((r) => r.json());
-    availableLogin = response[login] === "available";
-    return response[login] === "available";
+handleLoginAvailability = async (login, loginAvailability) => {
+    if(isValid('login', login)) {
+        const response = await fetch('/sender/check-login-availability/' + login).then((r) => r.json());
+        if(response.available) {
+            loginAvailability.classList.add("hidden")
+        } else {
+            loginAvailability.classList.remove("hidden")
+        }
+    }
 }
 
 window.onload = () => {
 
     let firstname = document.getElementById('firstname');
     let lastname = document.getElementById('lastname');
-    let sex = document.getElementById('sex')
     let login = document.getElementById('login');
     let password = document.getElementById('password');
     let passwordRepeated = document.getElementById('passwordRepeated');
-    let photo = document.getElementById('photo');
     let form = document.getElementById('form');
     let loginAvailability = document.getElementById('login-availability');
+    let address = document.getElementById('address');
+    let email = document.getElementById('email');
 
     firstname.addEventListener('input', (e) => {
-        if(isValid('firstname', e.target.value)) {
-            firstname.classList.remove("invalid-field");
-            firstname.classList.add("valid-field");
-        } else {
-            firstname.classList.remove("valid-field");
-            firstname.classList.add("invalid-field");
-        }
+        handleInput('firstname', e.target.value, firstname);
     });
 
     lastname.addEventListener('input', (e) => {
-        if(isValid('lastname', e.target.value)) {
-            lastname.classList.remove("invalid-field");
-            lastname.classList.add("valid-field");
-        } else {
-            lastname.classList.remove("valid-field");
-            lastname.classList.add("invalid-field");
-        }
-    });
-
-    sex.addEventListener('input', (e) => {
-        if(isValid('sex', e.target.value)) {
-            sex.classList.remove("invalid-field");
-            sex.classList.add("valid-field");
-        } else {
-            sex.classList.remove("valid-field");
-            sex.classList.add("invalid-field");
-        }
+        handleInput('lastname', e.target.value, lastname);
     });
 
     login.addEventListener('input', (e) => {
-        if(isValid('login', e.target.value)) {
-            login.classList.remove("invalid-field");
-            login.classList.add("valid-field");
-            isLoginAvailable(e.target.value).then((available) => {
-                if(available === true) {
-                    loginAvailability.classList.add("hidden");
-                    login.classList.remove("invalid-field");
-                    login.classList.add("valid-field");
-                } else {
-                    loginAvailability.classList.remove("hidden");
-                    login.classList.remove("valid-field");
-                    login.classList.add("invalid-field");
-                }
+        handleInput('login', e.target.value, login);
+    });
 
-            });
-        } else {
-            login.classList.remove("valid-field");
-            login.classList.add("invalid-field");
-        }
+    login.addEventListener('input', (e) => {
+        handleLoginAvailability(e.target.value, loginAvailability);
     });
 
     password.addEventListener('input', (e) => {
-        if(isValid('password', e.target.value)) {
-            password.classList.remove("invalid-field");
-            password.classList.add("valid-field");
-        } else {
-            password.classList.remove("valid-field");
-            password.classList.add("invalid-field");
-        }
+        handleInput('password', e.target.value, password);
     });
 
     passwordRepeated.addEventListener('input', (e) => {
-        if(isValid('password', password.value) && passwordRepeated.value === password.value) {
-            passwordRepeated.classList.remove("invalid-field");
-            passwordRepeated.classList.add("valid-field");
-        } else {
-            passwordRepeated.classList.remove("valid-field");
-            passwordRepeated.classList.add("invalid-field");
-        }
+        handleInput('passwordRepeated', e.target.value, passwordRepeated);
+    });
+
+    address.addEventListener('input', (e) => {
+        handleInput('address', e.target.value, address);
+    });
+
+    email.addEventListener('input', (e) => {
+        handleInput('email', e.target.value, email);
     });
 
     form.addEventListener('submit', (e) => {

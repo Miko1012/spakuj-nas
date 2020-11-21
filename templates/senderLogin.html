@@ -5,6 +5,15 @@
     <title>Logowanie nadawcy paczek</title>
 </head>
 <body>
+{% with messages = get_flashed_messages() %}
+ {% if messages %}
+ <ul class=flashes>
+ {% for message in messages %}
+ <li>{{ message }}</li>
+ {% endfor %}
+ </ul>
+ {% endif %}
+{% endwith %}
     <form action="/sender/login" id="form" method="post">
         <ul>
             <li>

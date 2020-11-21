@@ -45,6 +45,12 @@ input[type="password"] {
     height: 20px;
     color: #3B1F2B;
 }
+input[type="email"] {
+    background-color: #EFF9F0;
+    border-style: none;
+    height: 20px;
+    color: #3B1F2B;
+}
 .register-button {
     background-color: #3B1F2B;
     color: #EFF9F0;
