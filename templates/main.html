@@ -37,5 +37,14 @@
             Grafiki: Tomasz Domański, Mikołaj Olizar-Zakrzewski, Łukasz Partyka
         </a>
     </footer>
+{% with messages = get_flashed_messages() %}
+ {% if messages %}
+ <ul class=flashes>
+ {% for message in messages %}
+ <li>{{ message }}</li>
+ {% endfor %}
+ </ul>
+ {% endif %}
+{% endwith %}
 </body>
 </html>

@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <script src="{{ url_for('static', filename='js/senderSignUp.js')}}"></script>
+{#    <script src="{{ url_for('static', filename='js/senderSignUp.js')}}"></script>#}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styleSenderSignUp.css') }}">
     <title>Rejestracja nadawcy paczek</title>
@@ -19,10 +19,11 @@
             </div>
             <div class="description">
             Po wypełnieniu krótkiego formularza będziesz gotowy wstąpić w nasze dostawcze szeregi!
+            </div>
         </div>
-        </div>
-        <form action="https://infinite-hamlet-29399.herokuapp.com/sender/register" method="post" enctype="multipart/form-data" id="form" target="_blank">
+        <form action="/sender/register" method="post" id="form">
         <ul>
+{#            imię, nazwisko, login, e-mail, hasło, powtórzone hasło i adres (pojedyncze pole tekstowe);#}
             <li>
                 <label for="firstname">Imię:</label>
                 <input type="text" id="firstname" name="firstname">
@@ -32,17 +33,13 @@
                 <input type="text" id="lastname" name="lastname">
             </li>
             <li>
-                <label for="sex">Płeć:</label>
-                <select id="sex" name="sex">
-                    <option>Wybierz płeć</option>
-                    <option value="M">mężczyzna</option>
-                    <option value="F">kobieta</option>
-                </select>
-            </li>
-            <li>
                 <label for="login">Login:</label>
                 <input type="text" id="login" name="login">
                 <span class="hidden" id="login-availability">Ten login jest już zajęty!</span>
+            </li>
+            <li>
+                <label for="email">Email:</label>
+                <input type="text" id="email" name="email">
             </li>
             <li>
                 <label for="password">Hasło:</label>
@@ -53,8 +50,8 @@
                 <input type="password" id="passwordRepeated" name="passwordRepeated">
             </li>
             <li>
-                <label for="photo">Zdjęcie:</label>
-                <input type="file" id="photo" name="photo" accept="image/">
+                <label for="address">Adres zamieszkania:</label>
+                <input type="text" id="address" name="address">
             </li>
         </ul>
         <input type="submit" value="Zarejestruj mnie!" class="register-button" id="form-submit-button">
