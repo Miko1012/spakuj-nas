@@ -1,4 +1,6 @@
 import json
+import uuid
+
 import requests
 from bcrypt import checkpw, gensalt, hashpw
 from datetime import datetime
@@ -54,14 +56,18 @@ def redirect(url, status=301):
     return response
 
 
+def save_label(label):
+    db.hset(f"user:{session['login']}", "label", label)
+    return True
+
+
 @app.route('/')
 def welcome():
-    print(session)
     return render_template('welcome.html')
 
 
 @app.route('/sender/sign-up')
-def sender_sign_up():
+def sender_sign_up_get():
     return render_template('senderSignUp.html')
 
 
@@ -150,3 +156,47 @@ def sender_logout():
     response = make_response("", 301)
     response.headers["Location"] = "/"
     return response
+
+
+@app.route('/sender/generate-label', methods=["GET", "POST"])
+def sender_generate_label():
+    print('dupa')
+    print(request)
+    if request.method == 'GET':
+        return render_template('senderGenerateLabel.html')
+
+    elif request.method == 'POST':
+        user = session["login"]
+        receiver = request.form.get("receiver")
+        box = request.form.get("box")
+        size = request.form.get("size")
+        label_id = uuid.uuid4()
+
+        # TODO spojrzeć czy powyższe nie są nullami
+
+        label = {
+            "user": user,
+            "receiver": receiver,
+            "box": box,
+            "size": size,
+            "label_id": str(label_id)
+        }
+        print(f"generating label:{label_id}")
+        print(label)
+        db.hset(f"user:{session['login']}", f"label:{label_id}", json.dumps(label))
+        return redirect(url_for('welcome'))
+
+    raise Exception('request method is neither post nor get')
+
+
+@app.route('/sender/dashboard', methods=["GET", "POST"])
+def sender_dashboard():
+    if request.method == 'GET':
+        user = db.hgetall(f"user:{session['login']}")
+        labels = []
+        for obj in user:
+            if obj.startswith(b'label'):
+                label_data = db.hget(f"user:{session['login']}", obj)
+                label_data = label_data.decode("UTF-8")
+                labels.append(label_data)
+        return render_template('senderDashboard.html', labels=labels)

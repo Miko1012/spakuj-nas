@@ -2,18 +2,20 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <title>{% block title%}{% endblock %}</title>
     {% block head_stuff %}{% endblock %}
 </head>
 <body>
     <nav>
-        <a href="/">Strona główna</a>
+        <a href={{ url_for('welcome') }}>Strona główna</a>
         {% if session["login"] %}
-            <a href="/sender/logout">Wyloguj się</a>
+            <span class="ml-auto">Cześć {{ session["login"] }} !</span>
+            <a href="/sender/generate-label">Stwórz etykietę</a>
+            <a href={{ url_for('sender_logout') }}>Wyloguj się</a>
         {% else %}
-        <a href="/sender/sign-up">Rejestracja nadawcy</a>
-            <a href="/sender/login">Logowanie nadawcy</a>
+            <a class="ml-auto" href={{ url_for('sender_sign_up_get') }}>Rejestracja nadawcy</a>
+            <a href={{ url_for('sender_login_get') }}>Logowanie nadawcy</a>
         {% endif %}
     </nav>
     {% block content %}{% endblock %}

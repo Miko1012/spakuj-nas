@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Tablica - Spakuj nas
+{% endblock %}
+
+{% block head_stuff %}
+
+{% endblock %}
+
+{% block content %}
+    <div>
+    tablica
+    {% for label in labels %}
+
+    <div>
+    {{ label }}
+    </div>
+
+    {% endfor %}
+    </div>
+{% endblock %}

@@ -5,7 +5,6 @@
 {% endblock %}
 
 {% block head_stuff %}
-<!--    <script src="{{ url_for('static', filename='js/senderSignUp.js')}}"></script>-->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/senderLogin.css') }}">
 {% endblock %}
 
@@ -43,47 +42,3 @@
 {% endwith %}
     </div>
 {% endblock %}
-<!--
-
-<!DOCTYPE html>
-<html lang="pl">
-<head>
-    <meta charset="UTF-8">
-    <title>Logowanie nadawcy paczek</title>
-</head>
-<body>
-{% with messages = get_flashed_messages() %}
- {% if messages %}
- <ul class=flashes>
- {% for message in messages %}
- <li>{{ message }}</li>
- {% endfor %}
- </ul>
- {% endif %}
-{% endwith %}
-    <form action="/sender/login" id="form" method="post">
-        <ul>
-            <li>
-                <label for="login">Login:</label>
-                <input type="text" id="login" name="login">
-            </li>
-            <li>
-                <label for="password">Hasło:</label>
-                <input type="text" id="password" name="password">
-            </li>
-            <li>
-                <input type="submit" value="Zaloguj">
-            </li>
-        </ul>
-    </form>
-{% with messages = get_flashed_messages() %}
- {% if messages %}
- <ul class=flashes>
- {% for message in messages %}
- <li>{{ message }}</li>
- {% endfor %}
- </ul>
- {% endif %}
-{% endwith %}
-</body>
-</html>-->
