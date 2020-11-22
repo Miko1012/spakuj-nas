@@ -63,6 +63,33 @@ footer a:hover {
     font-size: 1.5rem;
     width: 50%;
 }
+.flashes {
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+}
+.flash {
+    padding: 1rem;
+    margin: 1rem;
+
+    color: #EFF9F0;
+    font-size: 1.5rem;
+}
+
+.flash-success {
+    background-color: #669D31;
+}
+.flash-error {
+    background-color: #88292F;
+}
+.flash-hide-button {
+    padding-left: 2rem;
+}
+.flash-hide-button:hover {
+    cursor: pointer;
+}
 @media(max-width: 767px) {
     nav {
         /*flex-direction: column;*/

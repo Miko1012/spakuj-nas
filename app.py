@@ -82,21 +82,19 @@ def sender_login_post():
     password = request.form.get("password")
 
     if not login or not password:
-        flash("Missing login and/or password")
+        flash("Missing login and/or password", "error")
         return redirect(url_for('sender_login_get'))
 
     if not verify_user(login, password):
-        flash("Invalid login and/or password")
+        flash("Invalid login and/or password", "error")
         return redirect(url_for('sender_login_get'))
 
     print(f"{login} verification result: {verify_user(login, password)}")
 
-    flash(f"Witaj {login}!")
     session["login"] = login
     session["logged-at"] = datetime.now()
     print("Login successful, established session:")
     print(session)
-    flash("ssij mi fiuta!")
     return redirect(url_for('welcome'))
 
 
@@ -111,32 +109,31 @@ def sender_register():
     address = request.form.get("address")
 
     if not firstname:
-        flash("No firstname provided")
+        flash("No firstname provided", "error")
         return render_template('senderSignUp.html')
 
     if not lastname:
-        flash("No lastname provided")
+        flash("No lastname provided", "error")
         return render_template('senderSignUp.html')
 
     if not email:
-        flash("No email provided")
+        flash("No email provided", "error")
         return render_template('senderSignUp.html')
 
     if not password:
-        flash("No password provided")
+        flash("No password provided", "error")
         return render_template('senderSignUp.html')
 
     if password != password_repeated:
-        flash("Passwords do not match")
+        flash("Passwords do not match", "error")
         return render_template('senderSignUp.html')
 
     if login_taken(login):
-        flash("Login already taken")
+        flash("Login already taken", "error")
         return render_template('senderSignUp.html')
 
-    print(f"Registering {login}...")
     save_user(firstname, lastname, email, password, login, address)
-
+    flash("Pomyślnie zarejestrowano użytkownika.", "success")
     response = make_response("", 301)
     response.headers["Location"] = "/sender/login"
     return response
@@ -207,13 +204,11 @@ def sender_dashboard():
 def sender_delete_label(label_uid):
     user = db.hgetall(f"user:{session['login']}")
     label_to_delete = str.encode("label:" + label_uid)
-    # print(label_to_delete)
     for obj in user:
         if obj == label_to_delete:
             db.hdel(f"user:{session['login']}", obj)
-            print(f"Deleting {obj}...")
-            flash('Etykieta została pomyślnie usunięta.')
+            flash('Etykieta została pomyślnie usunięta.', 'success')
             return redirect('/sender/dashboard')
 
-    flash('Użytkownik nie posiada etykiety o podanym identyfikatorze.')
+    flash('Użytkownik nie posiada etykiety o podanym identyfikatorze.', "error")
     return redirect('/sender/dashboard')
