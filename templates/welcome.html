@@ -8,24 +8,23 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styleMain.css') }}">
 {% endblock %}
 
-{% block content %}
-    <div class="content">
-        <div class="header">
-            <div class="title">
-                Spakuj nas! {{ session["login"] }}
+{% block content_title %}
+    Spakuj nas! {{ session["login"] }}
+{% endblock %}
 
-            </div>
-            <div class="description">
-                Twoja platforma do wysyłania i odbierania paczek z każdego miejsca w Polsce!
-            </div>
-            <div class="register-sender-button">
+{% block content_description %}
+    Twoja platforma do wysyłania i odbierania paczek z każdego miejsca w Polsce!
+{% endblock %}
+
+{% block content %}
+    <div class="register-sender-button">
                 <a href="/sender/sign-up" class="register-sender-button-text">
                     Zarejestruj się już teraz!
                 </a>
             </div>
-        </div>
-    </div>
 {% endblock %}
+
+
 <!--
 
 <!DOCTYPE html>

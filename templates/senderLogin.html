@@ -8,17 +8,16 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/senderLogin.css') }}">
 {% endblock %}
 
+{% block content_title %}
+    Logowanie nadawcy
+{% endblock %}
+
+{% block content_description %}
+    Zaloguj się, aby móc wykorzystać pełen potencjał naszego serwisu!
+{% endblock %}
+
 {% block content %}
-    <div class="content">
-        <div class="header">
-            <div class="title">
-                Logowanie nadawcy
-            </div>
-            <div class="description">
-            Zaloguj się, aby móc wykorzystać pełen potencjał naszego serwisu!
-            </div>
-        </div>
-        <form action="/sender/login" method="post" id="form">
+    <form action="/sender/login" method="post" id="form">
         <ul>
             <li>
                 <label for="login">Login:</label>
@@ -31,14 +30,13 @@
         </ul>
         <input type="submit" value="Zaloguj" class="login-button" id="form-submit-button">
     </form>
-        {% with messages = get_flashed_messages() %}
- {% if messages %}
- <ul class=flashes>
- {% for message in messages %}
- <li>{{ message }}</li>
- {% endfor %}
- </ul>
- {% endif %}
-{% endwith %}
-    </div>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <ul class=flashes>
+        {% for message in messages %}
+            <li>{{ message }}</li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+    {% endwith %}
 {% endblock %}

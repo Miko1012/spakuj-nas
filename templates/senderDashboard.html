@@ -5,18 +5,41 @@
 {% endblock %}
 
 {% block head_stuff %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/senderDashboard.css') }}">
+{% endblock %}
 
+{% block content_title %}
+    Kokpit
+{% endblock %}
+
+{% block content_description %}
+    Tablica z etykietami Twoich przesyłek!
 {% endblock %}
 
 {% block content %}
     <div>
-    tablica
-    {% for label in labels %}
-
-    <div>
-    {{ label }}
+        Twoje przesyłki:
     </div>
-
-    {% endfor %}
-    </div>
+    <table>
+        <tr>
+            <th>Adresat</th>
+            <th>Skrytka docelowa</th>
+            <th>Wymiary paczki</th>
+            <th>Identyfikator etykiety</th>
+            <th></th>
+        </tr>
+        {% for label in labels %}
+        <tr>
+            <th>{{ label["receiver"] }}</th>
+            <th>{{ label.box }}</th>
+            <th>{{ label.size }}</th>
+            <th>{{ label.label_id }}</th>
+            <th>
+                <a href="{{ url_for('sender_delete_label', label_uid = label.label_id) }}">
+                    usuń
+                </a>
+            </th>
+        </tr>
+        {% endfor %}
+    </table>
 {% endblock %}

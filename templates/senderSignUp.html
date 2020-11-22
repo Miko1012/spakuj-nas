@@ -9,89 +9,16 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styleSenderSignUp.css') }}">
 {% endblock %}
 
-{% block content %}
-    <div class="content">
-        <div class="header">
-            <div class="title">
-                Rejestracja nadawcy
-            </div>
-            <div class="description">
-            Po wypełnieniu krótkiego formularza będziesz gotowy wstąpić w nasze dostawcze szeregi!
-            </div>
-        </div>
-        <form action="/sender/register" method="post" id="form">
-        <ul>
-            <li>
-                <label for="firstname">Imię:</label>
-                <input type="text" id="firstname" name="firstname" placeholder="Musi zaczynać się wielką literą">
-            </li>
-            <li>
-                <label for="lastname">Nazwisko:</label>
-                <input type="text" id="lastname" name="lastname" placeholder="Musi zaczynać się wielką literą">
-            </li>
-            <li>
-                <label for="login">Login:</label>
-                <input type="text" id="login" name="login" placeholder="Musi zawierać min. 8 znaków">
-                <span class="hidden" id="login-availability">Ten login jest już zajęty!</span>
-            </li>
-            <li>
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email" required placeholder="W formie mail@email.com">
-            </li>
-            <li>
-                <label for="password">Hasło:</label>
-                <input type="password" id="password" name="password" placeholder="Musi zawierać min. 8 znaków">
-            </li>
-            <li>
-                <label for="passwordRepeated">Powtórz hasło:</label>
-                <input type="password" id="passwordRepeated" name="passwordRepeated" placeholder="Musi zawierać min. 8 znaków">
-            </li>
-            <li>
-                <label for="address">Adres:</label>
-                <input type="text" id="address" name="address" required placeholder="Nie może być puste">
-            </li>
-        </ul>
-        <input type="submit" value="Zarejestruj mnie!" class="register-button" id="form-submit-button">
-    </form>
-    </div>
+{% block content_title %}
+    Rejestracja nadawcy
 {% endblock %}
 
-<!--
+{% block content_description %}
+    Po wypełnieniu krótkiego formularza będziesz gotowy wstąpić w nasze dostawcze szeregi!
+{% endblock %}
 
-
-<!DOCTYPE html>
-<html lang="pl">
-<head>
-    <meta charset="UTF-8">
-    <script src="{{ url_for('static', filename='js/senderSignUp.js')}}"></script>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styleSenderSignUp.css') }}">
-    <title>Rejestracja nadawcy paczek</title>
-</head>
-<body>
-    <nav>
-        <a href="/">Strona główna</a>
-        <a href="/sender/sign-up">Rejestracja nadawcy</a>
-    </nav>
-    {% with messages = get_flashed_messages() %}
- {% if messages %}
- <ul class=flashes>
- {% for message in messages %}
- <li>{{ message }}</li>
- {% endfor %}
- </ul>
- {% endif %}
-{% endwith %}
-    <div class="content">
-        <div class="header">
-            <div class="title">
-                Rejestracja nadawcy
-            </div>
-            <div class="description">
-            Po wypełnieniu krótkiego formularza będziesz gotowy wstąpić w nasze dostawcze szeregi!
-            </div>
-        </div>
-        <form action="/sender/register" method="post" id="form">
+{% block content %}
+    <form action="/sender/register" method="post" id="form">
         <ul>
             <li>
                 <label for="firstname">Imię:</label>
@@ -125,17 +52,4 @@
         </ul>
         <input type="submit" value="Zarejestruj mnie!" class="register-button" id="form-submit-button">
     </form>
-    </div>
-    <footer>
-        <a href="mailto:mczarkowski7@outlook.com">
-            2020 Mikołaj Czarkowski
-        </a>
-        <a href="https://github.com/Miko1012/spakuj-nas" target="_blank">
-            Repozytorium projektu
-        </a>
-        <a href="https://www.youtube.com/watch?v=PCQs3vSJ6xA" target="_blank">
-            Grafiki: Tomasz Domański, Mikołaj Olizar-Zakrzewski, Łukasz Partyka
-        </a>
-    </footer>
-</body>
-</html>-->
+{% endblock %}

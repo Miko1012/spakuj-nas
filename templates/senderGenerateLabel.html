@@ -8,10 +8,16 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/senderGenerateLabel.css') }}">
 {% endblock %}
 
+{% block content_title %}
+    Tworzenie etykiety
+{% endblock %}
+
+{% block content_description %}
+    Wygeneruj unikalą etykietę po podaniu danych przesyłki!
+{% endblock %}
+
 {% block content %}
-    <div>
-        siema, tu się generuje etykiety
-        <form id="form" action="{{ url_for('sender_generate_label') }}" method="post">
+    <form id="form" action="{{ url_for('sender_generate_label') }}" method="post">
             <ul>
                 <li>
                     <label for="receiver">Adresat:</label>
@@ -28,5 +34,4 @@
             </ul>
             <input type="submit" value="Wygeneruj etykietę" class="register-button" id="form-submit-button">
         </form>
-    </div>
 {% endblock %}

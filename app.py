@@ -184,7 +184,7 @@ def sender_generate_label():
         print(f"generating label:{label_id}")
         print(label)
         db.hset(f"user:{session['login']}", f"label:{label_id}", json.dumps(label))
-        return redirect(url_for('welcome'))
+        return redirect(url_for('sender_dashboard'))
 
     raise Exception('request method is neither post nor get')
 
@@ -198,5 +198,22 @@ def sender_dashboard():
             if obj.startswith(b'label'):
                 label_data = db.hget(f"user:{session['login']}", obj)
                 label_data = label_data.decode("UTF-8")
+                label_data = json.loads(label_data)
                 labels.append(label_data)
         return render_template('senderDashboard.html', labels=labels)
+
+
+@app.route('/sender/delete-label/<label_uid>')
+def sender_delete_label(label_uid):
+    user = db.hgetall(f"user:{session['login']}")
+    label_to_delete = str.encode("label:" + label_uid)
+    # print(label_to_delete)
+    for obj in user:
+        if obj == label_to_delete:
+            db.hdel(f"user:{session['login']}", obj)
+            print(f"Deleting {obj}...")
+            flash('Etykieta została pomyślnie usunięta.')
+            return redirect('/sender/dashboard')
+
+    flash('Użytkownik nie posiada etykiety o podanym identyfikatorze.')
+    return redirect('/sender/dashboard')
