@@ -2,16 +2,3 @@
     background-image: url('/static/img/backdrop-main.png');
     background-size: cover;
 }
-.register-sender-button {
-    height: 50px;
-    width: 250px;
-    background-color: #3B1F2B;
-    display: table;
-}
-.register-sender-button-text {
-    font-size: 1.2rem;
-    color: #EFF9F0;
-    display: table-cell;
-    vertical-align: middle;
-    text-align: center;
-}

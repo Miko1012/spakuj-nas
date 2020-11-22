@@ -25,13 +25,12 @@
     <nav>
         <a href={{ url_for('welcome') }}>Strona główna</a>
         {% if session["login"] %}
-            <span class="ml-auto">Cześć {{ session["login"] }} !</span>
+            <span class="ml-auto">Cześć {{ session["login"] }}!</span>
             <a href="{{ url_for('sender_dashboard') }}">Kokpit</a>
-            <a href="/sender/generate-label">Stwórz etykietę</a>
             <a href={{ url_for('sender_logout') }}>Wyloguj się</a>
         {% else %}
-            <a class="ml-auto" href={{ url_for('sender_sign_up_get') }}>Rejestracja nadawcy</a>
-            <a href={{ url_for('sender_login_get') }}>Logowanie nadawcy</a>
+            <a class="ml-auto" href={{ url_for('sender_register') }}>Rejestracja nadawcy</a>
+            <a href={{ url_for('sender_login') }}>Logowanie nadawcy</a>
         {% endif %}
     </nav>
     <div class="page">

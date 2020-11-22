@@ -8,7 +8,6 @@ from flask import Flask, render_template, request, make_response, session, flash
 from flask_session import Session
 from dotenv import load_dotenv
 from redis import StrictRedis
-from jwt import encode, decode
 from os import getenv
 
 load_dotenv()
@@ -18,6 +17,7 @@ db = StrictRedis(REDIS_HOST, db=7, password=REDIS_PASS)
 
 SESSION_TYPE = "redis"
 SESSION_REDIS = db
+SESSION_COOKIE_SECURE = True
 app = Flask(__name__)
 app.config.from_object(__name__)
 app.secret_key = getenv("SECRET_KEY")
@@ -32,7 +32,6 @@ def save_user(firstname, lastname, email, password, login, address):
     salt = gensalt(5)
     password = password.encode()
     hashed = hashpw(password, salt)
-    print(f"saving user with login:{login}, password: {password}, email: {email}")
     db.hset(f"user:{login}", "firstname", firstname)
     db.hset(f"user:{login}", "lastname", lastname)
     db.hset(f"user:{login}", "email", email)
@@ -45,7 +44,6 @@ def verify_user(login, password):
     password = password.encode()
     hashed = db.hget(f"user:{login}", "password")
     if not hashed:
-        print(f"ERROR: No password for {login}")
         return False
     return checkpw(password, hashed)
 
@@ -66,77 +64,79 @@ def welcome():
     return render_template('welcome.html')
 
 
-@app.route('/sender/sign-up')
-def sender_sign_up_get():
-    return render_template('senderSignUp.html')
-
-
-@app.route('/sender/login', methods=["GET"])
-def sender_login_get():
-    return render_template('senderLogin.html')
-
-
-@app.route('/sender/login', methods=["POST"])
-def sender_login_post():
-    login = request.form.get("login")
-    password = request.form.get("password")
-
-    if not login or not password:
-        flash("Missing login and/or password", "error")
-        return redirect(url_for('sender_login_get'))
-
-    if not verify_user(login, password):
-        flash("Invalid login and/or password", "error")
-        return redirect(url_for('sender_login_get'))
-
-    print(f"{login} verification result: {verify_user(login, password)}")
-
-    session["login"] = login
-    session["logged-at"] = datetime.now()
-    print("Login successful, established session:")
-    print(session)
-    return redirect(url_for('welcome'))
-
-
-@app.route('/sender/register', methods=["POST"])
+@app.route('/sender/register', methods=["GET", "POST"])
 def sender_register():
-    firstname = request.form.get("firstname")
-    lastname = request.form.get("lastname")
-    email = request.form.get("email")
-    password = request.form.get("password")
-    password_repeated = request.form.get("passwordRepeated")
-    login = request.form.get("login")
-    address = request.form.get("address")
+    if request.method == "GET":
+        return render_template('senderRegister.html')
 
-    if not firstname:
-        flash("No firstname provided", "error")
-        return render_template('senderSignUp.html')
+    elif request.method == "POST":
+        firstname = request.form.get("firstname")
+        lastname = request.form.get("lastname")
+        email = request.form.get("email")
+        password = request.form.get("password")
+        password_repeated = request.form.get("passwordRepeated")
+        login = request.form.get("login")
+        address = request.form.get("address")
 
-    if not lastname:
-        flash("No lastname provided", "error")
-        return render_template('senderSignUp.html')
+        if not firstname:
+            flash("No firstname provided", "error")
+            return render_template('senderRegister.html')
 
-    if not email:
-        flash("No email provided", "error")
-        return render_template('senderSignUp.html')
+        if not lastname:
+            flash("No lastname provided", "error")
+            return render_template('senderRegister.html')
 
-    if not password:
-        flash("No password provided", "error")
-        return render_template('senderSignUp.html')
+        if not email:
+            flash("No email provided", "error")
+            return render_template('senderRegister.html')
 
-    if password != password_repeated:
-        flash("Passwords do not match", "error")
-        return render_template('senderSignUp.html')
+        if not password:
+            flash("No password provided", "error")
+            return render_template('senderRegister.html')
 
-    if login_taken(login):
-        flash("Login already taken", "error")
-        return render_template('senderSignUp.html')
+        if password != password_repeated:
+            flash("Passwords do not match", "error")
+            return render_template('senderRegister.html')
 
-    save_user(firstname, lastname, email, password, login, address)
-    flash("Pomyślnie zarejestrowano użytkownika.", "success")
-    response = make_response("", 301)
-    response.headers["Location"] = "/sender/login"
-    return response
+        if login_taken(login):
+            flash("Login already taken", "error")
+            return render_template('senderRegister.html')
+
+        save_user(firstname, lastname, email, password, login, address)
+        flash("Pomyślnie zarejestrowano użytkownika.", "success")
+        response = make_response("", 301)
+        response.headers["Location"] = "/sender/login"
+        return response
+
+    else:
+        flash('Wystąpił błąd serwera - błędny typ żądania', 'error')
+        return render_template("welcome.html")
+
+
+@app.route('/sender/login', methods=["GET", "POST"])
+def sender_login():
+    if request.method == "GET":
+        return render_template('senderLogin.html')
+
+    elif request.method == "POST":
+        login = request.form.get("login")
+        password = request.form.get("password")
+
+        if not login or not password:
+            flash("Niepoprawne dane logowania!", "error")
+            return redirect(url_for('sender_login'))
+
+        if not verify_user(login, password):
+            flash("Niepoprawne dane logowania!", "error")
+            return redirect(url_for('sender_login'))
+
+        session["login"] = login
+        session["logged-at"] = datetime.now()
+        return redirect(url_for('sender_dashboard'))
+
+    else:
+        flash('Wystąpił błąd serwera - błędny typ żądania', 'error')
+        return render_template("welcome.html")
 
 
 @app.route('/sender/check-login-availability/<login>')
@@ -146,8 +146,10 @@ def is_user(login):
 
 @app.route('/sender/logout')
 def sender_logout():
-    print("Logging out, clearing session:")
-    print(session)
+    if 'login' not in session:
+        flash("Musisz się zalogować aby się wylogować :)", "error")
+        return redirect(url_for('welcome'))
+
     session.clear()
 
     response = make_response("", 301)
@@ -157,8 +159,10 @@ def sender_logout():
 
 @app.route('/sender/generate-label', methods=["GET", "POST"])
 def sender_generate_label():
-    print('dupa')
-    print(request)
+    if 'login' not in session:
+        flash("Musisz się zalogować aby mieć dostęp do tej strony.", "error")
+        return redirect(url_for('welcome'))
+
     if request.method == 'GET':
         return render_template('senderGenerateLabel.html')
 
@@ -169,7 +173,9 @@ def sender_generate_label():
         size = request.form.get("size")
         label_id = uuid.uuid4()
 
-        # TODO spojrzeć czy powyższe nie są nullami
+        if "" in [receiver, box, size]:
+            flash("Wypełnij wszystkie pola formularza.", "error")
+            return render_template('senderGenerateLabel.html')
 
         label = {
             "user": user,
@@ -178,9 +184,8 @@ def sender_generate_label():
             "size": size,
             "label_id": str(label_id)
         }
-        print(f"generating label:{label_id}")
-        print(label)
         db.hset(f"user:{session['login']}", f"label:{label_id}", json.dumps(label))
+        flash("Dodano etykietę paczki!", "success")
         return redirect(url_for('sender_dashboard'))
 
     raise Exception('request method is neither post nor get')
@@ -188,6 +193,10 @@ def sender_generate_label():
 
 @app.route('/sender/dashboard', methods=["GET", "POST"])
 def sender_dashboard():
+    if 'login' not in session:
+        flash("Musisz się zalogować aby mieć dostęp do tej strony.", "error")
+        return redirect(url_for('welcome'))
+
     if request.method == 'GET':
         user = db.hgetall(f"user:{session['login']}")
         labels = []
@@ -202,6 +211,10 @@ def sender_dashboard():
 
 @app.route('/sender/delete-label/<label_uid>')
 def sender_delete_label(label_uid):
+    if 'login' not in session:
+        flash("Musisz się zalogować aby mieć dostęp do tej strony.", "error")
+        return redirect(url_for('welcome'))
+
     user = db.hgetall(f"user:{session['login']}")
     label_to_delete = str.encode("label:" + label_uid)
     for obj in user:
@@ -212,3 +225,7 @@ def sender_delete_label(label_uid):
 
     flash('Użytkownik nie posiada etykiety o podanym identyfikatorze.', "error")
     return redirect('/sender/dashboard')
+
+
+if __name__ == "__main__":
+    app.run(ssl_context='adhoc')

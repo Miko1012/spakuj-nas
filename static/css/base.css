@@ -89,6 +89,34 @@ footer a:hover {
 }
 .flash-hide-button:hover {
     cursor: pointer;
+}/*
+.register-sender-button {
+    height: 50px;
+    width: 250px;
+    background-color: #3B1F2B;
+    display: table;
+}
+.register-sender-button-text {
+    font-size: 1.2rem;
+    color: #EFF9F0;
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+}*/
+.big-button {
+    display: inline-flex;
+    background-color: #3B1F2B;
+    font-size: 1.3rem;
+    /*margin: 1rem 0;*/
+    padding: 1rem;
+}
+.small-button {
+    display: inline-flex;
+    background-color: #3B1F2B;
+    font-size: 1rem;
+    font-weight: normal;
+    /*margin: 1rem 0;*/
+    padding: 0.3rem 1rem;
 }
 @media(max-width: 767px) {
     nav {

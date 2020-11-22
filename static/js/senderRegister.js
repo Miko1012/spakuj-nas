@@ -61,11 +61,9 @@ isValid = (field, value) => {
 
 handleInput = (field, value, element) => {
     if(isValid(field, value)) {
-            // console.log("valid field")
             element.classList.remove("invalid-field");
             element.classList.add("valid-field");
         } else {
-        // console.log("invalid field")
             element.classList.remove("valid-field");
             element.classList.add("invalid-field");
         }

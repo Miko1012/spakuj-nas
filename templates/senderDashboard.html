@@ -13,20 +13,26 @@
 {% endblock %}
 
 {% block content_description %}
-    Tablica z etykietami Twoich przesyłek!
+    Tablica z etykietami Twoich paczek!
 {% endblock %}
 
 {% block content %}
-    <div>
-        Twoje przesyłki:
-    </div>
-    <table>
+    <a href="{{ url_for('sender_generate_label') }}">
+        <span class="big-button">
+            Dodaj etykietę paczki
+        </span>
+    </a>
+    {% if labels %}
+        <h3>
+            Twoje paczki:
+        </h3>
+        <table>
         <tr>
             <th>Adresat</th>
             <th>Skrytka docelowa</th>
             <th>Wymiary paczki</th>
             <th>Identyfikator etykiety</th>
-            <th></th>
+            <th>Akcja</th>
         </tr>
         {% for label in labels %}
         <tr>
@@ -36,10 +42,13 @@
             <th>{{ label.label_id }}</th>
             <th>
                 <a href="{{ url_for('sender_delete_label', label_uid = label.label_id) }}">
-                    usuń
+                    <span class="small-button">
+                        usuń
+                    </span>
                 </a>
             </th>
         </tr>
         {% endfor %}
     </table>
+    {% endif %}
 {% endblock %}
