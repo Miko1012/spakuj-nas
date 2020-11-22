@@ -1,6 +1,9 @@
 ul {
     list-style-type: none;
 }
+li {
+    margin-bottom: 5px;
+}
 label {
     display: inline-block;
     width: 150px;
@@ -16,8 +19,8 @@ select {
     border-style: none;
     height: 20px;
 }
-.content {
-    background-image: url('/static/img/backdrop-senderSignUp.png');
+.page {
+    background-image: url('/static/img/backdrop-login.png');
     background-size: cover;
 }
 .header {
@@ -35,13 +38,13 @@ select {
 }
 input[type="text"] {
     background-color: #EFF9F0;
-    border-style: none;
+    border: 2px solid #3B1F2B;
     height: 20px;
     color: #3B1F2B;
 }
 input[type="password"] {
     background-color: #EFF9F0;
-    border-style: none;
+    border: 2px solid #3B1F2B;
     height: 20px;
     color: #3B1F2B;
 }

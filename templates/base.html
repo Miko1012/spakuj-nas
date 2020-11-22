@@ -36,11 +36,15 @@
     <div class="page">
         <div class="content">
             <div class="header">
-            <div class="title">
+            <div class="title-div">
+                <span class="title">
                 {% block content_title %}{% endblock %}
+            </span>
             </div>
-            <div class="description">
+            <div class="description-div">
+                <span class="description">
                 {% block content_description %}{% endblock %}
+            </span>
             </div>
         </div>
         {% block content %}{% endblock %}

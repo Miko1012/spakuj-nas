@@ -17,14 +17,11 @@
 {% endblock %}
 
 {% block content %}
-    <a href="{{ url_for('sender_register') }}">
-    <span class="big-button">
-        Zarejestruj się już teraz!
-    </span>
-    </a>
-    {#<div class="register-sender-button">
-        <a href="/sender/sign-up" class="register-sender-button-text">
+    <div>
+        <a href="{{ url_for('sender_register') }}">
+            <span class="big-button">
             Zarejestruj się już teraz!
+            </span>
         </a>
-    </div>#}
+    </div>
 {% endblock %}

@@ -17,6 +17,7 @@
 {% endblock %}
 
 {% block content %}
+    <div>
     <form id="form" action="{{ url_for('sender_generate_label') }}" method="post">
             <ul>
                 <li>
@@ -34,4 +35,5 @@
             </ul>
             <input type="submit" value="Wygeneruj etykietę" class="register-button" id="form-submit-button">
         </form>
+    </div>
 {% endblock %}

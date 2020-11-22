@@ -53,13 +53,24 @@ footer a:hover {
 .content {
     padding: 3rem;
     color: #3B1F2B;
+    display: flex;
+    flex-direction: column;
+}
+.title-div {
+    margin-bottom: 1rem;
 }
 .title {
     font-size: 5rem;
     font-weight: bold;
+    color: #3B1F2B;
+    padding: 1rem;
+}
+.description-div {
+    margin-bottom: 1rem;
 }
 .description {
-    padding: 1rem 0;
+    color: #3B1F2B;
+    padding: 0.5rem 1rem;
     font-size: 1.5rem;
     width: 50%;
 }
@@ -89,25 +100,11 @@ footer a:hover {
 }
 .flash-hide-button:hover {
     cursor: pointer;
-}/*
-.register-sender-button {
-    height: 50px;
-    width: 250px;
-    background-color: #3B1F2B;
-    display: table;
 }
-.register-sender-button-text {
-    font-size: 1.2rem;
-    color: #EFF9F0;
-    display: table-cell;
-    vertical-align: middle;
-    text-align: center;
-}*/
 .big-button {
     display: inline-flex;
     background-color: #3B1F2B;
     font-size: 1.3rem;
-    /*margin: 1rem 0;*/
     padding: 1rem;
 }
 .small-button {
@@ -115,9 +112,9 @@ footer a:hover {
     background-color: #3B1F2B;
     font-size: 1rem;
     font-weight: normal;
-    /*margin: 1rem 0;*/
     padding: 0.3rem 1rem;
 }
+/*#TODO responsywny navbar i stopka*/
 @media(max-width: 767px) {
     nav {
         /*flex-direction: column;*/

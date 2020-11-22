@@ -17,17 +17,14 @@
 {% endblock %}
 
 {% block content %}
-    <a href="{{ url_for('sender_generate_label') }}">
-        <span class="big-button">
-            Dodaj etykietę paczki
-        </span>
-    </a>
     {% if labels %}
-        <h3>
+        <div class="mt">
+        <span class="text">
             Twoje paczki:
-        </h3>
+        </span>
+        </div>
         <table>
-        <tr>
+        <tr class="mb">
             <th>Adresat</th>
             <th>Skrytka docelowa</th>
             <th>Wymiary paczki</th>
@@ -36,19 +33,26 @@
         </tr>
         {% for label in labels %}
         <tr>
-            <th>{{ label["receiver"] }}</th>
-            <th>{{ label.box }}</th>
-            <th>{{ label.size }}</th>
-            <th>{{ label.label_id }}</th>
-            <th>
+            <td>{{ label["receiver"] }}</td>
+            <td>{{ label.box }}</td>
+            <td>{{ label.size }}</td>
+            <td>{{ label.label_id }}</td>
+            <td>
                 <a href="{{ url_for('sender_delete_label', label_uid = label.label_id) }}">
                     <span class="small-button">
                         usuń
                     </span>
                 </a>
-            </th>
+            </td>
         </tr>
         {% endfor %}
     </table>
     {% endif %}
+    <div class="mt">
+        <a href="{{ url_for('sender_generate_label') }}">
+            <span class="big-button">
+                Dodaj etykietę paczki
+            </span>
+        </a>
+    </div>
 {% endblock %}

@@ -4,12 +4,35 @@
 .text-r {
     text-align: right;
 }
+table {
+    background-color: #FFE7CC;
+    padding: 0.5rem;
+}
 th {
     text-align: left;
     padding: 0.1rem 0.3rem;
 }
+.text {
+    margin-top: 1rem;
+    font-size: 1.5rem;
+    color: #3B1F2B;
+    background-color: #FFE7CC;
+    padding: 0.5rem 1rem;
+    font-weight: bolder;
+}
 .page {
-    background-image: url('/static/img/backdrop-senderSignUp.png');
+    background-image: url('/static/img/a.png');
     background-size: cover;
 
+}
+.title {
+    color: #EFF9F0;
+    background-color: #3B1F2B;
+}
+.description {
+    color: #EFF9F0;
+    background-color: #3B1F2B;
+}
+.mt {
+    margin-top: 1rem;
 }
