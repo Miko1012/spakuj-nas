@@ -1,6 +1,7 @@
 import json
 import requests
 from bcrypt import checkpw, gensalt, hashpw
+from datetime import datetime
 from flask import Flask, render_template, request, make_response, session, flash, url_for, jsonify
 from flask_session import Session
 from dotenv import load_dotenv
@@ -54,8 +55,9 @@ def redirect(url, status=301):
 
 
 @app.route('/')
-def hello_world():
-    return render_template('main.html')
+def welcome():
+    print(session)
+    return render_template('welcome.html')
 
 
 @app.route('/sender/sign-up')
@@ -85,10 +87,11 @@ def sender_login_post():
 
     flash(f"Witaj {login}!")
     session["login"] = login
-    session["logged-at"] = "now"
+    session["logged-at"] = datetime.now()
     print("Login successful, established session:")
     print(session)
-    return redirect(url_for('hello_world'))
+    flash("ssij mi fiuta!")
+    return redirect(url_for('welcome'))
 
 
 @app.route('/sender/register', methods=["POST"])

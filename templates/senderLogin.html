@@ -1,3 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Logowanie nadawcy paczek
+{% endblock %}
+
+{% block head_stuff %}
+<!--    <script src="{{ url_for('static', filename='js/senderSignUp.js')}}"></script>-->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/senderLogin.css') }}">
+{% endblock %}
+
+{% block content %}
+    <div class="content">
+        <div class="header">
+            <div class="title">
+                Logowanie nadawcy
+            </div>
+            <div class="description">
+            Zaloguj się, aby móc wykorzystać pełen potencjał naszego serwisu!
+            </div>
+        </div>
+        <form action="/sender/login" method="post" id="form">
+        <ul>
+            <li>
+                <label for="login">Login:</label>
+                <input type="text" id="login" name="login">
+            </li>
+            <li>
+                <label for="password">Hasło:</label>
+                <input type="password" id="password" name="password">
+            </li>
+        </ul>
+        <input type="submit" value="Zaloguj" class="login-button" id="form-submit-button">
+    </form>
+        {% with messages = get_flashed_messages() %}
+ {% if messages %}
+ <ul class=flashes>
+ {% for message in messages %}
+ <li>{{ message }}</li>
+ {% endfor %}
+ </ul>
+ {% endif %}
+{% endwith %}
+    </div>
+{% endblock %}
+<!--
+
 <!DOCTYPE html>
 <html lang="pl">
 <head>
@@ -39,4 +86,4 @@
  {% endif %}
 {% endwith %}
 </body>
-</html>
+</html>-->

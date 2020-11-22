@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>{% block title%}{% endblock %}</title>
+    {% block head_stuff %}{% endblock %}
+</head>
+<body>
+    <nav>
+        <a href="/">Strona główna</a>
+        {% if session["login"] %}
+            <a href="/sender/logout">Wyloguj się</a>
+        {% else %}
+        <a href="/sender/sign-up">Rejestracja nadawcy</a>
+            <a href="/sender/login">Logowanie nadawcy</a>
+        {% endif %}
+    </nav>
+    {% block content %}{% endblock %}
+    <footer>
+        <a href="mailto:mczarkowski7@outlook.com">
+            2020 Mikołaj Czarkowski
+        </a>
+        <a href="https://github.com/Miko1012/spakuj-nas" target="_blank">
+            Repozytorium projektu
+        </a>
+        <a href="https://www.youtube.com/watch?v=PCQs3vSJ6xA" target="_blank">
+            Grafiki: Tomasz Domański, Mikołaj Olizar-Zakrzewski, Łukasz Partyka
+        </a>
+    </footer>
+</body>
+</html>
