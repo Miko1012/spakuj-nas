@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <script src="{{ url_for('static', filename='js/flashes.js')}}"></script>
+    <title>{% block title%}{% endblock %}</title>
+    {% block head_stuff %}{% endblock %}
+</head>
+<body>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class=flashes>
+                {% for category, message in messages %}
+                    <div class="flash flash-{{ category }}" id="flash-{{ loop.index }}">
+                        {{ message }}
+                        <a onclick="hideFlash('flash-{{ loop.index }}')" class="flash-hide-button">
+                            ✕
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+    <nav>
+        <a href={{ url_for('welcome') }}>Strona główna</a>
+        {% if session["login"] %}
+            <span class="ml-auto">Cześć {{ session["login"] }}!</span>
+            <a href="{{ url_for('sender_dashboard') }}">Kokpit</a>
+            <a href={{ url_for('sender_logout') }}>Wyloguj się</a>
+        {% else %}
+            <a class="ml-auto" href={{ url_for('sender_register') }}>Rejestracja nadawcy</a>
+            <a href={{ url_for('sender_login') }}>Logowanie nadawcy</a>
+        {% endif %}
+    </nav>
+    <div class="page">
+        <div class="content">
+            <div class="header">
+            <div class="title-div">
+                <span class="title">
+                {% block content_title %}{% endblock %}
+            </span>
+            </div>
+            <div class="description-div">
+                <span class="description">
+                {% block content_description %}{% endblock %}
+            </span>
+            </div>
+        </div>
+        {% block content %}{% endblock %}
+        </div>
+    </div>
+    <footer>
+        <a href="mailto:mczarkowski7@outlook.com">
+            2020 Mikołaj Czarkowski
+        </a>
+        <a href="https://github.com/Miko1012/spakuj-nas" target="_blank">
+            Repozytorium projektu
+        </a>
+        <a href="https://www.youtube.com/watch?v=PCQs3vSJ6xA" target="_blank">
+            Grafiki: Tomasz Domański, Mikołaj Olizar-Zakrzewski, Łukasz Partyka
+        </a>
+    </footer>
+</body>
+</html>

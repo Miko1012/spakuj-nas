@@ -20,8 +20,21 @@ select {
     height: 20px;
 }
 .page {
-    background-image: url('/static/img/backdrop-senderSignUp.png');
+    background-image: url('/static/img/backdrop-login.png');
     background-size: cover;
+}
+.header {
+    padding: 2rem 2rem 0.5rem 2rem;
+    color: #3B1F2B;
+}
+.title {
+    font-size: 5rem;
+    font-weight: bold;
+}
+.description {
+    padding: 1rem 0;
+    font-size: 1.5rem;
+    width: 60%;
 }
 input[type="text"] {
     background-color: #EFF9F0;
@@ -37,11 +50,11 @@ input[type="password"] {
 }
 input[type="email"] {
     background-color: #EFF9F0;
-    border: 2px solid #3B1F2B;
+    border-style: none;
     height: 20px;
     color: #3B1F2B;
 }
-.register-button {
+.login-button {
     background-color: #3B1F2B;
     color: #EFF9F0;
     border: none;

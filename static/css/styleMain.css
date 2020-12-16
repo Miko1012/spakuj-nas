@@ -1,33 +1,4 @@
-.backdrop {
-    width: 100%;
-}
-.content {
+.page {
     background-image: url('/static/img/backdrop-main.png');
     background-size: cover;
-}
-.header {
-    padding: 3rem;
-    color: #3B1F2B;
-}
-.title {
-    font-size: 5rem;
-    font-weight: bold;
-}
-.description {
-    padding: 1rem 0;
-    font-size: 1.5rem;
-    width: 50%;
-}
-.register-sender-button {
-    height: 50px;
-    width: 250px;
-    background-color: #3B1F2B;
-    display: table;
-}
-.register-sender-button-text {
-    font-size: 1.2rem;
-    color: #EFF9F0;
-    display: table-cell;
-    vertical-align: middle;
-    text-align: center;
 }

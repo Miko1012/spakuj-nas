@@ -1,0 +1,127 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+body {
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+    background-color: #EFF9F0;
+    padding-top: 3.2rem;
+}
+a {
+    color: #EFF9F0;
+    text-decoration: none;
+}
+span {
+    color: #EFF9F0;
+    text-decoration: none;
+}
+nav {
+    background-color: #3B1F2B;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    height: 3.2rem;
+}
+nav a {
+    padding: 1rem;
+}
+nav span {
+    padding: 1rem;
+}
+nav a:hover {
+    font-weight: bold;
+}
+.content {
+    min-height: calc(100vh - 12.4rem);
+}
+footer {
+    background-color: #3B1F2B;
+    color: #EFF9F0;
+    height: 3.2rem;
+    display: flex;
+    justify-content: space-evenly;
+}
+footer a {
+    padding: 1rem;
+}
+footer a:hover {
+    font-weight: bold;
+}
+.ml-auto {
+    margin-left: auto;
+}
+.content {
+    padding: 3rem;
+    color: #3B1F2B;
+    display: flex;
+    flex-direction: column;
+}
+.title-div {
+    margin-bottom: 1rem;
+}
+.title {
+    font-size: 5rem;
+    font-weight: bold;
+    color: #3B1F2B;
+    padding: 1rem;
+}
+.description-div {
+    margin-bottom: 1rem;
+}
+.description {
+    color: #3B1F2B;
+    padding: 0.5rem 1rem;
+    font-size: 1.5rem;
+    width: 50%;
+}
+.flashes {
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+}
+.flash {
+    padding: 1rem;
+    margin: 1rem;
+
+    color: #EFF9F0;
+    font-size: 1.5rem;
+}
+
+.flash-success {
+    background-color: #669D31;
+}
+.flash-error {
+    background-color: #88292F;
+}
+.flash-hide-button {
+    padding-left: 2rem;
+}
+.flash-hide-button:hover {
+    cursor: pointer;
+}
+.big-button {
+    display: inline-flex;
+    background-color: #3B1F2B;
+    font-size: 1.3rem;
+    padding: 1rem;
+}
+.small-button {
+    display: inline-flex;
+    background-color: #3B1F2B;
+    font-size: 1rem;
+    font-weight: normal;
+    padding: 0.3rem 1rem;
+}
+/*#TODO responsywny navbar i stopka*/
+@media(max-width: 767px) {
+    nav {
+        /*flex-direction: column;*/
+    }
+}
+@media(max-width: 500px) {
+    footer {
+        height: 4.2rem;
+    }
+}

@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Tworzenie etykiety - Spakuj nas
+{% endblock %}
+
+{% block head_stuff %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/senderGenerateLabel.css') }}">
+{% endblock %}
+
+{% block content_title %}
+    Tworzenie etykiety
+{% endblock %}
+
+{% block content_description %}
+    Wygeneruj unikalą etykietę po podaniu danych paczki!
+{% endblock %}
+
+{% block content %}
+    <div>
+    <form id="form" action="{{ url_for('sender_generate_label') }}" method="post">
+            <ul>
+                <li>
+                    <label for="receiver">Adresat:</label>
+                    <input type="text" id="receiver" name="receiver" placeholder="Nie może być puste">
+                </li>
+                <li>
+                    <label for="box">Skrytka docelowa:</label>
+                    <input type="text" id="box" name="box" placeholder="Nie może być puste">
+                </li>
+                <li>
+                    <label for="size">Rozmiar paczki (szerokość, wysokość, głębokość w cm)</label>
+                    <input type="text" id="size" name="size" placeholder="12x17x30">
+                </li>
+            </ul>
+            <input type="submit" value="Wygeneruj etykietę" class="register-button" id="form-submit-button">
+        </form>
+    </div>
+{% endblock %}

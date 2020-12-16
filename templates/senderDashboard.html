@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Tablica - Spakuj nas
+{% endblock %}
+
+{% block head_stuff %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/senderDashboard.css') }}">
+{% endblock %}
+
+{% block content_title %}
+    Kokpit
+{% endblock %}
+
+{% block content_description %}
+    Tablica z etykietami Twoich paczek!
+{% endblock %}
+
+{% block content %}
+    {% if labels %}
+        <div class="mt">
+        <span class="text">
+            Twoje paczki:
+        </span>
+        </div>
+        <table>
+        <tr class="mb">
+            <th>Adresat</th>
+            <th>Skrytka docelowa</th>
+            <th>Wymiary paczki</th>
+            <th>Identyfikator etykiety</th>
+            <th>Akcja</th>
+        </tr>
+        {% for label in labels %}
+        <tr>
+            <td>{{ label["receiver"] }}</td>
+            <td>{{ label.box }}</td>
+            <td>{{ label.size }}</td>
+            <td>{{ label.label_id }}</td>
+            <td>
+                <a href="{{ url_for('sender_delete_label', label_uid = label.label_id) }}">
+                    <span class="small-button">
+                        usuń
+                    </span>
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
+    <div class="mt">
+        <a href="{{ url_for('sender_generate_label') }}">
+            <span class="big-button">
+                Dodaj etykietę paczki
+            </span>
+        </a>
+    </div>
+{% endblock %}
