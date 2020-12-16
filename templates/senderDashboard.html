@@ -29,6 +29,7 @@
             <th>Skrytka docelowa</th>
             <th>Wymiary paczki</th>
             <th>Identyfikator etykiety</th>
+            <th>Status</th>
             <th>Akcja</th>
         </tr>
         {% for label in labels %}
@@ -37,6 +38,7 @@
             <td>{{ label.box }}</td>
             <td>{{ label.size }}</td>
             <td>{{ label.label_id }}</td>
+            <td>{{ label.status }}</td>
             <td>
                 <a href="{{ url_for('sender_delete_label', label_uid = label.label_id) }}">
                     <span class="small-button">

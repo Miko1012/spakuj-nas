@@ -182,7 +182,8 @@ def sender_generate_label():
             "receiver": receiver,
             "box": box,
             "size": size,
-            "label_id": str(label_id)
+            "label_id": str(label_id),
+            "status": "nieprzypisana"
         }
         db.hset(f"user:{session['login']}", f"label:{label_id}", json.dumps(label))
         flash("Dodano etykietę paczki!", "success")
@@ -228,4 +229,4 @@ def sender_delete_label(label_uid):
 
 
 if __name__ == "__main__":
-    app.run(ssl_context='adhoc', host="0.0.0.0", port=5000)
+    app.run(ssl_context='adhoc', host="127.0.0.1", port=5000, debug=True)
