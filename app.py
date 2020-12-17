@@ -5,6 +5,7 @@ import requests
 from bcrypt import checkpw, gensalt, hashpw
 from datetime import datetime
 from flask import Flask, render_template, request, make_response, session, flash, url_for, jsonify
+from flask_cors import CORS, cross_origin
 from flask_session import Session
 from dotenv import load_dotenv
 from redis import StrictRedis
@@ -20,6 +21,7 @@ SESSION_REDIS = db
 SESSION_COOKIE_SECURE = True
 app = Flask(__name__)
 app.config.from_object(__name__)
+app.config['CORS_HEADERS'] = 'Content-Type'
 app.secret_key = getenv("SECRET_KEY")
 ses = Session(app)
 
@@ -229,6 +231,7 @@ def sender_delete_label(label_uid):
 
 
 @app.route('/courier/dashboard', methods=["GET"])
+@cross_origin()
 def courier_dashboard():
     users = db.keys("user:*")
     labels = []
