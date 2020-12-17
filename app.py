@@ -228,5 +228,22 @@ def sender_delete_label(label_uid):
     return redirect('/sender/dashboard')
 
 
+@app.route('/courier/dashboard', methods=["GET"])
+def courier_dashboard():
+    users = db.keys("user:*")
+    labels = []
+    for user in users:
+        user = user.decode()
+        user_data = db.hgetall(f"{user}")
+        for obj in user_data:
+            if obj.startswith(b'label'):
+                label_data = db.hget(f"{user}", obj)
+                label_data = label_data.decode("UTF-8")
+                label_data = json.loads(label_data)
+                labels.append(label_data)
+    response = make_response(json.dumps(labels), 200)
+    return response
+
+
 if __name__ == "__main__":
     app.run(ssl_context='adhoc', host="127.0.0.1", port=5000, debug=True)
