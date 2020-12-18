@@ -3,13 +3,19 @@ import uuid
 
 import requests
 from bcrypt import checkpw, gensalt, hashpw
-from datetime import datetime
+import datetime
 from flask import Flask, render_template, request, make_response, session, flash, url_for, jsonify
 from flask_cors import CORS, cross_origin
 from flask_session import Session
 from dotenv import load_dotenv
 from redis import StrictRedis
 from os import getenv
+from flask_jwt_extended import (
+    JWTManager, jwt_required, create_access_token,
+    jwt_refresh_token_required, create_refresh_token,
+    get_jwt_identity, set_access_cookies,
+    set_refresh_cookies, unset_jwt_cookies
+)
 
 load_dotenv()
 REDIS_HOST = getenv("REDIS_HOST")
@@ -23,7 +29,19 @@ app = Flask(__name__)
 app.config.from_object(__name__)
 app.config['CORS_HEADERS'] = 'Content-Type'
 app.secret_key = getenv("SECRET_KEY")
-ses = Session(app)
+app.config['JWT_TOKEN_LOCATION'] = ['cookies']
+app.config['JWT_COOKIE_CSRF_PROTECT'] = False
+app.config['JWT_SECRET_KEY'] = 'alamakota'
+jwt = JWTManager(app)
+# ses = Session(app)
+
+
+STATUSES = {
+    0: "nieprzypisana",
+    1: "w drodze",
+    2: "dostarczona",
+    3: "odebrana"
+}
 
 
 def login_taken(login):
@@ -185,7 +203,7 @@ def sender_generate_label():
             "box": box,
             "size": size,
             "label_id": str(label_id),
-            "status": "nieprzypisana"
+            "status": 0
         }
         db.hset(f"user:{session['login']}", f"label:{label_id}", json.dumps(label))
         flash("Dodano etykietę paczki!", "success")
@@ -208,6 +226,7 @@ def sender_dashboard():
                 label_data = db.hget(f"user:{session['login']}", obj)
                 label_data = label_data.decode("UTF-8")
                 label_data = json.loads(label_data)
+                label_data["status"] = STATUSES[label_data["status"]]
                 labels.append(label_data)
         return render_template('senderDashboard.html', labels=labels)
 
@@ -243,7 +262,10 @@ def courier_dashboard():
                 label_data = db.hget(f"{user}", obj)
                 label_data = label_data.decode("UTF-8")
                 label_data = json.loads(label_data)
-                labels.append(label_data)
+                label_data["status"] = STATUSES[label_data["status"]]
+                # if label_data < (len(STATUSES) - 1):
+                #
+                # labels.append(label_data)
     response = make_response(json.dumps(labels), 200)
     return response
 
