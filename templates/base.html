@@ -24,8 +24,8 @@
     {% endwith %}
     <nav>
         <a href={{ url_for('welcome') }}>Strona główna</a>
-        {% if session["login"] %}
-            <span class="ml-auto">Cześć {{ session["login"] }}!</span>
+        {% if identity %}
+            <span class="ml-auto">Cześć {{ identity }}!</span>
             <a href="{{ url_for('sender_dashboard') }}">Kokpit</a>
             <a href={{ url_for('sender_logout') }}>Wyloguj się</a>
         {% else %}

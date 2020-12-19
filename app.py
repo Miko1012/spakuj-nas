@@ -6,7 +6,6 @@ from bcrypt import checkpw, gensalt, hashpw
 import datetime
 from flask import Flask, render_template, request, make_response, session, flash, url_for, jsonify
 from flask_cors import CORS, cross_origin
-from flask_session import Session
 from dotenv import load_dotenv
 from redis import StrictRedis
 from os import getenv
@@ -14,7 +13,7 @@ from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token,
     jwt_refresh_token_required, create_refresh_token,
     get_jwt_identity, set_access_cookies,
-    set_refresh_cookies, unset_jwt_cookies
+    set_refresh_cookies, unset_jwt_cookies, get_raw_jwt, jwt_optional
 )
 
 load_dotenv()
@@ -24,16 +23,19 @@ db = StrictRedis(REDIS_HOST, db=7, password=REDIS_PASS)
 
 SESSION_TYPE = "redis"
 SESSION_REDIS = db
-SESSION_COOKIE_SECURE = True
+# SESSION_COOKIE_SECURE = True
 app = Flask(__name__)
 app.config.from_object(__name__)
 app.config['CORS_HEADERS'] = 'Content-Type'
 app.secret_key = getenv("SECRET_KEY")
+app.config['JWT_SECRET_KEY'] = 'alamakota'
 app.config['JWT_TOKEN_LOCATION'] = ['cookies']
 app.config['JWT_COOKIE_CSRF_PROTECT'] = False
-app.config['JWT_SECRET_KEY'] = 'alamakota'
+app.config['JWT_CSRF_CHECK_FORM'] = False
+# app.config['JWT_COOKIE_CSRF_PROTECT'] = False
+app.config['JWT_REFRESH_COOKIE_PATH'] = '/token/refresh'
+# app.config['JWT_ACCESS_COOKIE_PATH'] = '/'
 jwt = JWTManager(app)
-# ses = Session(app)
 
 
 STATUSES = {
@@ -42,6 +44,26 @@ STATUSES = {
     2: "dostarczona",
     3: "odebrana"
 }
+
+
+def check_identity(identity):
+    if identity is None:
+        flash("Musisz się zalogować aby mieć dostęp do tej strony.", "error")
+        return redirect(url_for('welcome'))
+    return True
+
+
+@app.route('/token/refresh', methods=['POST'])
+@jwt_refresh_token_required
+def refresh():
+    # Create the new access token
+    current_user = get_jwt_identity()
+    access_token = create_access_token(identity=current_user)
+
+    # Set the JWT access cookie in the response
+    resp = jsonify({'refresh': True})
+    set_access_cookies(resp, access_token)
+    return resp, 200
 
 
 def login_taken(login):
@@ -74,14 +96,10 @@ def redirect(url, status=301):
     return response
 
 
-def save_label(label):
-    db.hset(f"user:{session['login']}", "label", label)
-    return True
-
-
 @app.route('/')
+@jwt_optional
 def welcome():
-    return render_template('welcome.html')
+    return render_template('welcome.html', identity=get_jwt_identity())
 
 
 @app.route('/sender/register', methods=["GET", "POST"])
@@ -150,13 +168,18 @@ def sender_login():
             flash("Niepoprawne dane logowania!", "error")
             return redirect(url_for('sender_login'))
 
-        session["login"] = login
-        session["logged-at"] = datetime.now()
-        return redirect(url_for('sender_dashboard'))
+        access_token = create_access_token(identity=login)
+        refresh_token = create_refresh_token(identity=login)
+        resp = jsonify({'login': login})
+        set_access_cookies(resp, access_token)
+        set_refresh_cookies(resp, refresh_token)
+        response = make_response(resp, 301)
+        response.headers["Location"] = url_for('sender_dashboard')
+        return response
 
     else:
         flash('Wystąpił błąd serwera - błędny typ żądania', 'error')
-        return render_template("welcome.html")
+        return redirect(url_for(welcome))
 
 
 @app.route('/sender/check-login-availability/<login>')
@@ -165,29 +188,28 @@ def is_user(login):
 
 
 @app.route('/sender/logout')
+@jwt_required
 def sender_logout():
-    if 'login' not in session:
-        flash("Musisz się zalogować aby się wylogować :)", "error")
-        return redirect(url_for('welcome'))
+    identity = get_jwt_identity()
+    check_identity(identity=identity)
 
-    session.clear()
-
-    response = make_response("", 301)
-    response.headers["Location"] = "/"
+    resp = jsonify({'logout': True})
+    unset_jwt_cookies(resp)
+    response = make_response(resp, 301)
+    response.headers["Location"] = url_for('welcome')
     return response
 
 
 @app.route('/sender/generate-label', methods=["GET", "POST"])
+@jwt_required
 def sender_generate_label():
-    if 'login' not in session:
-        flash("Musisz się zalogować aby mieć dostęp do tej strony.", "error")
-        return redirect(url_for('welcome'))
+    identity = get_jwt_identity()
+    check_identity(identity)
 
     if request.method == 'GET':
-        return render_template('senderGenerateLabel.html')
+        return render_template('senderGenerateLabel.html', identity=identity)
 
     elif request.method == 'POST':
-        user = session["login"]
         receiver = request.form.get("receiver")
         box = request.form.get("box")
         size = request.form.get("size")
@@ -195,17 +217,17 @@ def sender_generate_label():
 
         if "" in [receiver, box, size]:
             flash("Wypełnij wszystkie pola formularza.", "error")
-            return render_template('senderGenerateLabel.html')
+            return render_template('senderGenerateLabel.html', identity=identity)
 
         label = {
-            "user": user,
+            "user": identity,
             "receiver": receiver,
             "box": box,
             "size": size,
             "label_id": str(label_id),
             "status": 0
         }
-        db.hset(f"user:{session['login']}", f"label:{label_id}", json.dumps(label))
+        db.hset(f"user:{identity}", f"label:{label_id}", json.dumps(label))
         flash("Dodano etykietę paczki!", "success")
         return redirect(url_for('sender_dashboard'))
 
@@ -213,40 +235,40 @@ def sender_generate_label():
 
 
 @app.route('/sender/dashboard', methods=["GET", "POST"])
+@jwt_required
 def sender_dashboard():
-    if 'login' not in session:
-        flash("Musisz się zalogować aby mieć dostęp do tej strony.", "error")
-        return redirect(url_for('welcome'))
+    identity = get_jwt_identity()
+    check_identity(identity)
 
     if request.method == 'GET':
-        user = db.hgetall(f"user:{session['login']}")
+        user = db.hgetall(f"user:{identity}")
         labels = []
         for obj in user:
             if obj.startswith(b'label'):
-                label_data = db.hget(f"user:{session['login']}", obj)
+                label_data = db.hget(f"user:{identity}", obj)
                 label_data = label_data.decode("UTF-8")
                 label_data = json.loads(label_data)
                 label_data["status"] = STATUSES[label_data["status"]]
                 labels.append(label_data)
-        return render_template('senderDashboard.html', labels=labels)
+        return render_template('senderDashboard.html', labels=labels, identity=identity)
 
 
 @app.route('/sender/delete-label/<label_uid>')
+@jwt_required
 def sender_delete_label(label_uid):
-    if 'login' not in session:
-        flash("Musisz się zalogować aby mieć dostęp do tej strony.", "error")
-        return redirect(url_for('welcome'))
+    identity = get_jwt_identity()
+    check_identity(identity)
 
-    user = db.hgetall(f"user:{session['login']}")
+    user = db.hgetall(f"user:{identity}")
     label_to_delete = str.encode("label:" + label_uid)
     for obj in user:
         if obj == label_to_delete:
-            db.hdel(f"user:{session['login']}", obj)
+            db.hdel(f"user:{identity}", obj)
             flash('Etykieta została pomyślnie usunięta.', 'success')
             return redirect('/sender/dashboard')
 
     flash('Użytkownik nie posiada etykiety o podanym identyfikatorze.', "error")
-    return redirect('/sender/dashboard')
+    return redirect(url_for(sender_dashboard))
 
 
 @app.route('/courier/dashboard', methods=["GET"])
