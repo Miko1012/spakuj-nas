@@ -1,10 +1,11 @@
 import json
 import uuid
 
-import requests
+from flask_hal import HAL
+from flask_hal.document import Document, Embedded
+from flask_hal.link import Link
 from bcrypt import checkpw, gensalt, hashpw
-import datetime
-from flask import Flask, render_template, request, make_response, session, flash, url_for, jsonify
+from flask import Flask, render_template, request, make_response, session, flash, url_for, jsonify, g
 from flask_cors import CORS, cross_origin
 from dotenv import load_dotenv
 from redis import StrictRedis
@@ -36,7 +37,7 @@ app.config['JWT_CSRF_CHECK_FORM'] = False
 app.config['JWT_REFRESH_COOKIE_PATH'] = '/token/refresh'
 # app.config['JWT_ACCESS_COOKIE_PATH'] = '/'
 jwt = JWTManager(app)
-
+HAL(app)
 
 STATUSES = {
     0: "nieprzypisana",
@@ -276,6 +277,7 @@ def sender_delete_label(label_uid):
 def courier_dashboard():
     users = db.keys("user:*")
     labels = []
+    links = []
     for user in users:
         user = user.decode()
         user_data = db.hgetall(f"{user}")
@@ -284,12 +286,26 @@ def courier_dashboard():
                 label_data = db.hget(f"{user}", obj)
                 label_data = label_data.decode("UTF-8")
                 label_data = json.loads(label_data)
+                labels.append(label_data)
+                if label_data["status"] < (len(STATUSES) - 1):
+                    next_step = STATUSES[int(label_data["status"]) + 1]
+                    links.append(Link(label_data["label_id"] + ':Nadaj nowy status: ' + next_step,
+                                      '/courier/label/' + label_data["user"] + "&" + label_data["label_id"]))
+
                 label_data["status"] = STATUSES[label_data["status"]]
-                # if label_data < (len(STATUSES) - 1):
-                #
-                # labels.append(label_data)
-    response = make_response(json.dumps(labels), 200)
-    return response
+    document = Document(data={'labels': labels}, links=links)
+
+    return document.to_json()
+
+
+@app.route('/courier/label/<user>&<label_id>', methods=["PUT"])
+@cross_origin()
+def courier_label(user, label_id):
+    label = db.hget(f"user:{user}", f"label:{label_id}")
+    label = json.loads(label.decode())
+    label["status"] = label["status"] + 1
+    db.hset(f"user:{user}", f"label:{label_id}", json.dumps(label))
+    return json.dumps({'message': 'status zostal zmieniony'}), 200, {'ContentType': 'application/json'}
 
 
 if __name__ == "__main__":

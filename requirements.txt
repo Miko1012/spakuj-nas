@@ -33,3 +33,4 @@ wrapt==1.12.1
 flask-cors
 pyjwt==1.7.1
 flask-jwt-extended==3.25.0
+Flask-HAL==1.0.4
