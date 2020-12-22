@@ -287,9 +287,9 @@ def courier_dashboard():
                 label_data = label_data.decode("UTF-8")
                 label_data = json.loads(label_data)
                 labels.append(label_data)
-                if label_data["status"] < (len(STATUSES) - 1):
+                if label_data["status"] < 3:
                     next_step = STATUSES[int(label_data["status"]) + 1]
-                    links.append(Link(label_data["label_id"] + ':Nadaj nowy status: ' + next_step,
+                    links.append(Link(label_data["label_id"] + ':Nadaj nowy status - ' + next_step,
                                       '/courier/label/' + label_data["user"] + "&" + label_data["label_id"]))
 
                 label_data["status"] = STATUSES[label_data["status"]]
