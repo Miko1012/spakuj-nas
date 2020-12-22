@@ -2,11 +2,11 @@ import json
 import uuid
 
 from flask_hal import HAL
-from flask_hal.document import Document, Embedded
+from flask_hal.document import Document
 from flask_hal.link import Link
 from bcrypt import checkpw, gensalt, hashpw
-from flask import Flask, render_template, request, make_response, session, flash, url_for, jsonify, g
-from flask_cors import CORS, cross_origin
+from flask import Flask, render_template, request, make_response, flash, url_for, jsonify
+from flask_cors import cross_origin
 from dotenv import load_dotenv
 from redis import StrictRedis
 from os import getenv
@@ -14,7 +14,7 @@ from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token,
     jwt_refresh_token_required, create_refresh_token,
     get_jwt_identity, set_access_cookies,
-    set_refresh_cookies, unset_jwt_cookies, get_raw_jwt, jwt_optional
+    set_refresh_cookies, unset_jwt_cookies, jwt_optional
 )
 
 load_dotenv()
@@ -24,7 +24,6 @@ db = StrictRedis(REDIS_HOST, db=7, password=REDIS_PASS)
 
 SESSION_TYPE = "redis"
 SESSION_REDIS = db
-# SESSION_COOKIE_SECURE = True
 app = Flask(__name__)
 app.config.from_object(__name__)
 app.config['CORS_HEADERS'] = 'Content-Type'
@@ -33,15 +32,12 @@ app.config['JWT_SECRET_KEY'] = 'alamakota'
 app.config['JWT_TOKEN_LOCATION'] = ['cookies']
 app.config['JWT_COOKIE_CSRF_PROTECT'] = False
 app.config['JWT_CSRF_CHECK_FORM'] = False
-# app.config['JWT_COOKIE_CSRF_PROTECT'] = False
-app.config['JWT_REFRESH_COOKIE_PATH'] = '/token/refresh'
-# app.config['JWT_ACCESS_COOKIE_PATH'] = '/'
 jwt = JWTManager(app)
 HAL(app)
 
 STATUSES = {
     0: "nieprzypisana",
-    1: "w drodze",
+    1: "w drodze (utworzenie paczki)",
     2: "dostarczona",
     3: "odebrana"
 }
@@ -54,17 +50,14 @@ def check_identity(identity):
     return True
 
 
-@app.route('/token/refresh', methods=['POST'])
+@app.route('/refresh', methods=['POST'])
 @jwt_refresh_token_required
 def refresh():
-    # Create the new access token
     current_user = get_jwt_identity()
-    access_token = create_access_token(identity=current_user)
-
-    # Set the JWT access cookie in the response
-    resp = jsonify({'refresh': True})
-    set_access_cookies(resp, access_token)
-    return resp, 200
+    ret = {
+        'access_token': create_access_token(identity=current_user)
+    }
+    return jsonify(ret), 200
 
 
 def login_taken(login):
