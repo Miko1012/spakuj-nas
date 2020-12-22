@@ -40,11 +40,13 @@
             <td>{{ label.label_id }}</td>
             <td>{{ label.status }}</td>
             <td>
-                <a href="{{ url_for('sender_delete_label', label_uid = label.label_id) }}">
-                    <span class="small-button">
-                        usuń
-                    </span>
-                </a>
+                {% if label.status == 'nieprzypisana' %}
+                    <a href="{{ url_for('sender_delete_label', label_uid = label.label_id) }}">
+                        <span class="small-button">
+                            usuń
+                        </span>
+                    </a>
+                {% endif %}
             </td>
         </tr>
         {% endfor %}
