@@ -4,7 +4,6 @@ import uuid
 from flask_hal import HAL
 from flask_hal.document import Document
 from flask_hal.link import Link
-from bcrypt import checkpw, gensalt, hashpw
 from flask import Flask, render_template, request, make_response, flash, url_for, jsonify
 from flask_cors import cross_origin
 from dotenv import load_dotenv
@@ -16,6 +15,7 @@ from flask_jwt_extended import (
     get_jwt_identity, set_access_cookies,
     set_refresh_cookies, unset_jwt_cookies, jwt_optional
 )
+from werkzeug.security import generate_password_hash, check_password_hash
 
 load_dotenv()
 REDIS_HOST = getenv("REDIS_HOST")
@@ -65,9 +65,8 @@ def login_taken(login):
 
 
 def save_user(firstname, lastname, email, password, login, address):
-    salt = gensalt(5)
-    password = password.encode()
-    hashed = hashpw(password, salt)
+    hashed = generate_password_hash(password=password, method='pbkdf2:sha256:200000')
+
     db.hset(f"user:{login}", "firstname", firstname)
     db.hset(f"user:{login}", "lastname", lastname)
     db.hset(f"user:{login}", "email", email)
@@ -77,11 +76,10 @@ def save_user(firstname, lastname, email, password, login, address):
 
 
 def verify_user(login, password):
-    password = password.encode()
     hashed = db.hget(f"user:{login}", "password")
-    if not hashed:
+    if hashed is None:
         return False
-    return checkpw(password, hashed)
+    return check_password_hash(hashed.decode(), password)
 
 
 def redirect(url, status=301):
