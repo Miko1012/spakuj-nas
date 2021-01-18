@@ -77,3 +77,15 @@ input[type="email"] {
 .hidden {
     display: none;
 }
+.login-oauth-button {
+    background-color: #3B1F2B;
+    color: #EFF9F0;
+    border: none;
+    padding: 1rem;
+    margin-left: 38px;
+    font-size: 1.3rem;
+}
+.spacing {
+    margin: 2rem 2rem 2rem 38px;
+    font-size: 2rem;
+}

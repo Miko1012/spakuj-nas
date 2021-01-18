@@ -4,7 +4,7 @@ import uuid
 from flask_hal import HAL
 from flask_hal.document import Document
 from flask_hal.link import Link
-from flask import Flask, render_template, request, make_response, flash, url_for, jsonify
+from flask import Flask, render_template, request, make_response, flash, url_for, jsonify, session
 from flask_cors import cross_origin
 from dotenv import load_dotenv
 from redis import StrictRedis
@@ -16,6 +16,7 @@ from flask_jwt_extended import (
     set_refresh_cookies, unset_jwt_cookies, jwt_optional
 )
 from werkzeug.security import generate_password_hash, check_password_hash
+from authlib.integrations.flask_client import OAuth
 
 load_dotenv()
 REDIS_HOST = getenv("REDIS_HOST")
@@ -28,12 +29,26 @@ app = Flask(__name__)
 app.config.from_object(__name__)
 app.config['CORS_HEADERS'] = 'Content-Type'
 app.secret_key = getenv("SECRET_KEY")
-app.config['JWT_SECRET_KEY'] = 'alamakota'
+app.config['JWT_SECRET_KEY'] = getenv("JWT_SECRET_KEY")
 app.config['JWT_TOKEN_LOCATION'] = ['cookies']
 app.config['JWT_COOKIE_CSRF_PROTECT'] = False
 app.config['JWT_CSRF_CHECK_FORM'] = False
 jwt = JWTManager(app)
 HAL(app)
+oauth = OAuth(app)
+
+auth0 = OAuth.register(
+    self=oauth,
+    name='auth0',
+    client_id='gRaN8lcIUfEtssoKYZHgUjekh70PfqOo',
+    client_secret=getenv("OAUTH_CLIENT_SECRET"),
+    api_base_url='https://spakuj-nas.eu.auth0.com',
+    access_token_url='https://spakuj-nas.eu.auth0.com/oauth/token',
+    authorize_url='https://spakuj-nas.eu.auth0.com/authorize',
+    client_kwargs={
+        'scope': 'openid profile email',
+    },
+)
 
 STATUSES = {
     0: "nieprzypisana",
@@ -41,6 +56,34 @@ STATUSES = {
     2: "dostarczona",
     3: "odebrana"
 }
+
+
+# Here we're using the /callback route.
+@app.route('/callback')
+def callback_handling():
+    # Handles response from token endpoint
+    auth0.authorize_access_token()
+    resp = auth0.get('userinfo')
+    userinfo = resp.json()
+
+    print(userinfo)
+
+    # Store the user information in flask session.
+    session['jwt_payload'] = userinfo
+    session['profile'] = {
+        'user_id': userinfo['sub'],
+        'name': userinfo['name'],
+        'picture': userinfo['picture']
+    }
+
+    access_token = create_access_token(identity=userinfo['name'])
+    refresh_token = create_refresh_token(identity=userinfo['name'])
+    resp = jsonify({'login': userinfo['name']})
+    set_access_cookies(resp, access_token)
+    set_refresh_cookies(resp, refresh_token)
+    response = make_response(resp, 301)
+    response.headers["Location"] = url_for('sender_dashboard')
+    return response
 
 
 def check_identity(identity):
@@ -172,6 +215,11 @@ def sender_login():
     else:
         flash('Wystąpił błąd serwera - błędny typ żądania', 'error')
         return redirect(url_for(welcome))
+
+
+@app.route('/login-oauth')
+def sender_login_oauth():
+    return auth0.authorize_redirect(redirect_uri='https://127.0.0.1:5000/callback')
 
 
 @app.route('/sender/check-login-availability/<login>')
