@@ -1,10 +1,11 @@
 import json
 import uuid
+from urllib.parse import urlencode
 
 from flask_hal import HAL
 from flask_hal.document import Document
 from flask_hal.link import Link
-from flask import Flask, render_template, request, make_response, flash, url_for, jsonify, session
+from flask import Flask, render_template, request, make_response, flash, url_for, jsonify
 from flask_cors import cross_origin
 from dotenv import load_dotenv
 from redis import StrictRedis
@@ -58,30 +59,18 @@ STATUSES = {
 }
 
 
-# Here we're using the /callback route.
 @app.route('/callback')
 def callback_handling():
-    # Handles response from token endpoint
     auth0.authorize_access_token()
     resp = auth0.get('userinfo')
     userinfo = resp.json()
-
-    print(userinfo)
-
-    # Store the user information in flask session.
-    session['jwt_payload'] = userinfo
-    session['profile'] = {
-        'user_id': userinfo['sub'],
-        'name': userinfo['name'],
-        'picture': userinfo['picture']
-    }
-
     access_token = create_access_token(identity=userinfo['name'])
     refresh_token = create_refresh_token(identity=userinfo['name'])
     resp = jsonify({'login': userinfo['name']})
     set_access_cookies(resp, access_token)
     set_refresh_cookies(resp, refresh_token)
     response = make_response(resp, 301)
+    response.set_cookie('oauth', 'true', secure=True, httponly=True, path='/')
     response.headers["Location"] = url_for('sender_dashboard')
     return response
 
@@ -93,14 +82,17 @@ def check_identity(identity):
     return True
 
 
-@app.route('/refresh', methods=['POST'])
+@app.route('/token/refresh', methods=['POST'])
 @jwt_refresh_token_required
 def refresh():
+    # Create the new access token
     current_user = get_jwt_identity()
-    ret = {
-        'access_token': create_access_token(identity=current_user)
-    }
-    return jsonify(ret), 200
+    access_token = create_access_token(identity=current_user)
+
+    # Set the JWT access cookie in the response
+    resp = jsonify({'refresh': True})
+    set_access_cookies(resp, access_token)
+    return resp, 200
 
 
 def login_taken(login):
@@ -210,6 +202,7 @@ def sender_login():
         set_refresh_cookies(resp, refresh_token)
         response = make_response(resp, 301)
         response.headers["Location"] = url_for('sender_dashboard')
+        response.set_cookie('oauth', 'false', secure=True, httponly=True, path='/')
         return response
 
     else:
@@ -233,10 +226,25 @@ def sender_logout():
     identity = get_jwt_identity()
     check_identity(identity=identity)
 
+    if request.cookies['oauth'] == 'true':
+        params = {'returnTo': url_for('sender_logout_after_oauth', _external=True), 'client_id': 'gRaN8lcIUfEtssoKYZHgUjekh70PfqOo'}
+        return redirect(auth0.api_base_url + '/v2/logout?' + urlencode(params))
+
     resp = jsonify({'logout': True})
     unset_jwt_cookies(resp)
     response = make_response(resp, 301)
     response.headers["Location"] = url_for('welcome')
+    response.set_cookie('oauth', '', expires=0)
+    return response
+
+
+@app.route('/sender/logout-after-oauth')
+def sender_logout_after_oauth():
+    resp = jsonify({'logout': True})
+    unset_jwt_cookies(resp)
+    response = make_response(resp, 301)
+    response.headers["Location"] = url_for('welcome')
+    response.set_cookie('oauth', '', expires=0)
     return response
 
 
